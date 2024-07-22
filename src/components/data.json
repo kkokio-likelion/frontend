@@ -1,0 +1,166 @@
+{
+  "돼지": [
+    {
+      "id": 1,
+      "name": "삼겹살",
+      "price": 11000,
+      "side": [
+        {
+          "side1": "마늘추가",
+          "side1Price": 1000,
+          "side2": "고기100g추가",
+          "side2Price": 5000
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "항정살",
+      "price": 11000,
+      "side": [
+        {
+          "side1": "마늘추가",
+          "side1Price": 1000,
+          "side2": "고기100g추가",
+          "side2Price": 7000
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "목살",
+      "price": 10000,
+      "side": [
+        {
+          "side1": "마늘추가",
+          "side1Price": 1000,
+          "side2": "고기100g추가",
+          "side2Price": 4000
+        }
+      ]
+    }
+  ],
+  "소고기": [
+    {
+      "id": 4,
+      "name": "소고기 등심",
+      "price": 15000,
+      "side": [
+        {
+          "side1": "양파추가",
+          "side1Price": 1000,
+          "side2": "고기100g추가",
+          "side2Price": 7000
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "소고기 안심",
+      "price": 17000,
+      "side": [
+        {
+          "side1": "버섯추가",
+          "side1Price": 2000,
+          "side2": "마늘추가",
+          "side2Price": 1000
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "소고기 차돌박이",
+      "price": 16000,
+      "side": [
+        {
+          "side1": "김치추가",
+          "side1Price": 1500,
+          "side2": "고기100g추가",
+          "side2Price": 8000
+        }
+      ]
+    }
+  ],
+  "닭": [
+    {
+      "id": 7,
+      "name": "닭갈비",
+      "price": 12000,
+      "side": [
+        {
+          "side1": "치즈추가",
+          "side1Price": 2000,
+          "side2": "고구마추가",
+          "side2Price": 1500
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "닭꼬치",
+      "price": 5000,
+      "side": [
+        {
+          "side1": "양파추가",
+          "side1Price": 500,
+          "side2": "마늘추가",
+          "side2Price": 500
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "닭날개",
+      "price": 8000,
+      "side": [
+        {
+          "side1": "매운소스추가",
+          "side1Price": 1000,
+          "side2": "허니버터소스추가",
+          "side2Price": 1000
+        }
+      ]
+    }
+  ],
+  "음료": [
+    {
+      "id": 10,
+      "name": "콜라",
+      "price": 2000,
+      "side": [
+        {
+          "side1": "얼음추가",
+          "side1Price": 0,
+          "side2": "레몬추가",
+          "side2Price": 500
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "사이다",
+      "price": 2000,
+      "side": [
+        {
+          "side1": "얼음추가",
+          "side1Price": 0,
+          "side2": "라임추가",
+          "side2Price": 500
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "name": "오렌지 주스",
+      "price": 3000,
+      "side": [
+        {
+          "side1": "얼음추가",
+          "side1Price": 0,
+          "side2": "과육추가",
+          "side2Price": 1000
+        }
+      ]
+    }
+  ]
+}

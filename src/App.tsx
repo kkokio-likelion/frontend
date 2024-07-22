@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import MenuPage from 'pages/menu.page';
 import NotfoundPage from 'pages/notfound.page';
 import './App.css';
+import OrderPage from 'components/menu/PO/orderpage';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           <Route path="/" element={<FrontPage />}></Route>
           <Route path="/menu" element={<MenuPage />}></Route>
           <Route path="*" element={<NotfoundPage />}></Route>
+          <Route path="/menu/order" element={<OrderPage/>}></Route>
         </Routes>
       </BrowserRouter>
     </div>

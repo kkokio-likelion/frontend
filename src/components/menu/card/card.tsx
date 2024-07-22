@@ -1,42 +1,130 @@
+import { useState } from 'react';
 import Minusicon from './minusicon';
 import PlusIcon from './plusicon';
 import Side from './side';
 
-export default function Card() {
+type Props = {
+  menuName: string;
+  menuPrice: number;
+  plus: (totalPrice: number, count: number) => void;
+  modalclick: () => void;
+  sidemenu: {
+    side1: string;
+    side1Price: number;
+    side2: string;
+    side2Price: number;
+  }[];
+  savemenu: (menuDetails: {
+    name: string;
+    price: number;
+    count: number;
+    sides: Array<{ name: string; price: number }>;
+  }) => void;
+};
+
+interface SideItem {
+  name: string;
+  price: number;
+}
+
+export default function Card({
+  plus,
+  menuName,
+  menuPrice,
+  modalclick,
+  sidemenu,
+  savemenu,
+}: Props) {
+  const [count, setCount] = useState(1);
+  const [totalside, setTotalSide] = useState(0);
+  const [checkedside, setCheckedSide] = useState<SideItem[]>([]);
+
+  const plusClick = () => {
+    count < 100 && setCount((prev) => prev + 1);
+  };
+
+  const checkSide = (checked: boolean, sidename: string, sideprice: number) => {
+    if (checked) {
+      setCheckedSide((prev) => [...prev, { name: sidename, price: sideprice }]);
+    } else {
+      setCheckedSide((prev) => prev.filter((item) => item.name !== sidename));
+    }
+    console.log(checkedside);
+  };
+
+  const minusClick = () => {
+    count > 1 && setCount((prev) => prev - 1);
+  };
+
+  const plusSide = (sideprice: number) => {
+    setTotalSide((prev) => prev + sideprice);
+  };
+
+  const handleSave = () => {
+    const totalPrice = (menuPrice + totalside) * count;
+    plus(totalPrice, count);
+    savemenu({
+      name: menuName,
+      price: totalPrice,
+      count,
+      sides: checkedside,
+    });
+    modalclick();
+  };
+
   return (
-    <>
-      <div className="flex flex-col g-4 items-start w-[24.6875rem] p-4 border-l-4 border-t-4 ">
-        <div className="flex py-2 px-0 items-center g-4 self-stretch">
-          {/*위쪽 수량계산*/}
-          <div className="w-[6.875rem] h-[6.875rem] p-1 items-center g-[0.625rem]">
-            <image className="w-[6.375rem] h-[3.9375rem] flex-shrink-0"></image>
-          </div>
-          <div className="flex flex-col justify-between items-end flex-[1_0_0] self-stretch">
-            <p className="self-stretch text-[1.125rem] font-medium leading-[1.125rem]">
-              삼겹살
+    <div className="flex flex-col g-4 absolute bottom-0 items-start w-[25.6875rem] p-4 border-l-4 border-t-4 z-50">
+      <div className="flex py-2 px-0 items-center g-4 self-stretch">
+        <div className="w-[6.875rem] h-[6.875rem] p-1 items-center g-[0.625rem]">
+          <image className="w-[6.375rem] h-[3.9375rem] flex-shrink-0"></image>
+        </div>
+        <div className="flex flex-col justify-between items-end flex-[1_0_0] self-stretch">
+          <p className="self-stretch text-[1.125rem] font-medium leading-[1.125rem]">
+            {menuName}
+          </p>
+          <p>{(menuPrice + totalside) * count}원</p>
+          <div className="flex justify-center items-center gap-3">
+            <button
+              onClick={minusClick}
+              className="flex w-8 h-8 flex-col justify-center items-center rounded-2xl border border-black"
+            >
+              <Minusicon />
+            </button>
+            <p className="text-center font-noto text-lg font-medium leading-[1.125rem]">
+              {count}
             </p>
-            <div className="flex justify-center items-center gap-3">
-              <button className="flex w-8 h-8 flex-col justify-center items-center rounded-2xl border border-black">
-                <Minusicon />
-              </button>
-              <p className="text-center font-noto text-lg font-medium leading-[1.125rem]">
-                99
-              </p>
-              <button className="flex w-8 h-8 flex-col justify-center items-center rounded-2xl border border-black">
-                <PlusIcon />
-              </button>
-            </div>
+            <button
+              onClick={plusClick}
+              className="flex w-8 h-8 flex-col justify-center items-center rounded-2xl border border-black"
+            >
+              <PlusIcon />
+            </button>
           </div>
         </div>
-        <hr className="w-[22.6875rem] h-[0.0625rem] bg-gray-400 border-0" />
-        {/*구분 선*/}
-        <div className="flex flex-col items-start self-stretch">
-          <Side />
-        </div>
-        <button className="flex p-4 justify-center items-center gap-[0.625rem] self-stretch rounded-lg bg-[#62BDF0] text-[1.25rem] font-medium leading-5 text-white">
-          담기
-        </button>
       </div>
-    </>
+      <hr className="w-[24.6875rem] h-[0.0625rem] bg-gray-400 border-0" />
+      {sidemenu.map((item, index) => (
+        <div className="flex flex-col items-start self-stretch" key={index}>
+          <Side
+            plusSide={plusSide}
+            sidename={item.side1}
+            sideprice={item.side1Price}
+            menucheck={checkSide}
+          />
+          <Side
+            plusSide={plusSide}
+            sidename={item.side2}
+            sideprice={item.side2Price}
+            menucheck={checkSide}
+          />
+        </div>
+      ))}
+      <button
+        onClick={handleSave}
+        className="flex w-[24.6875rem] p-4 justify-center items-center gap-[0.625rem] self-stretch rounded-lg bg-[#62BDF0] text-[1.25rem] font-medium leading-5 text-white"
+      >
+        담기
+      </button>
+    </div>
   );
 }
