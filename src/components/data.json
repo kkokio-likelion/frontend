@@ -6,10 +6,12 @@
       "price": 11000,
       "side": [
         {
-          "side1": "마늘추가",
-          "side1Price": 1000,
-          "side2": "고기100g추가",
-          "side2Price": 5000
+          "name": "마늘추가",
+          "price": 1000
+        },
+        {
+          "name": "고기100g추가",
+          "price": 5000
         }
       ]
     },
@@ -19,10 +21,12 @@
       "price": 11000,
       "side": [
         {
-          "side1": "마늘추가",
-          "side1Price": 1000,
-          "side2": "고기100g추가",
-          "side2Price": 7000
+          "name": "마늘추가",
+          "price": 1000
+        },
+        {
+          "name": "고기100g추가",
+          "price": 7000
         }
       ]
     },
@@ -32,10 +36,12 @@
       "price": 10000,
       "side": [
         {
-          "side1": "마늘추가",
-          "side1Price": 1000,
-          "side2": "고기100g추가",
-          "side2Price": 4000
+          "name": "마늘추가",
+          "price": 1000
+        },
+        {
+          "name": "고기100g추가",
+          "price": 4000
         }
       ]
     }
@@ -47,10 +53,12 @@
       "price": 15000,
       "side": [
         {
-          "side1": "양파추가",
-          "side1Price": 1000,
-          "side2": "고기100g추가",
-          "side2Price": 7000
+          "name": "양파추가",
+          "price": 1000
+        },
+        {
+          "name": "고기100g추가",
+          "price": 7000
         }
       ]
     },
@@ -60,10 +68,12 @@
       "price": 17000,
       "side": [
         {
-          "side1": "버섯추가",
-          "side1Price": 2000,
-          "side2": "마늘추가",
-          "side2Price": 1000
+          "name": "버섯추가",
+          "price": 2000
+        },
+        {
+          "name": "마늘추가",
+          "price": 1000
         }
       ]
     },
@@ -73,10 +83,12 @@
       "price": 16000,
       "side": [
         {
-          "side1": "김치추가",
-          "side1Price": 1500,
-          "side2": "고기100g추가",
-          "side2Price": 8000
+          "name": "김치추가",
+          "price": 1500
+        },
+        {
+          "name": "고기100g추가",
+          "price": 8000
         }
       ]
     }
@@ -88,10 +100,12 @@
       "price": 12000,
       "side": [
         {
-          "side1": "치즈추가",
-          "side1Price": 2000,
-          "side2": "고구마추가",
-          "side2Price": 1500
+          "name": "치즈추가",
+          "price": 2000
+        },
+        {
+          "name": "고구마추가",
+          "price": 1500
         }
       ]
     },
@@ -101,10 +115,12 @@
       "price": 5000,
       "side": [
         {
-          "side1": "양파추가",
-          "side1Price": 500,
-          "side2": "마늘추가",
-          "side2Price": 500
+          "name": "양파추가",
+          "price": 500
+        },
+        {
+          "name": "마늘추가",
+          "price": 500
         }
       ]
     },
@@ -114,10 +130,12 @@
       "price": 8000,
       "side": [
         {
-          "side1": "매운소스추가",
-          "side1Price": 1000,
-          "side2": "허니버터소스추가",
-          "side2Price": 1000
+          "name": "매운소스추가",
+          "price": 1000
+        },
+        {
+          "name": "허니버터소스추가",
+          "price": 1000
         }
       ]
     }
@@ -129,10 +147,12 @@
       "price": 2000,
       "side": [
         {
-          "side1": "얼음추가",
-          "side1Price": 0,
-          "side2": "레몬추가",
-          "side2Price": 500
+          "name": "얼음추가",
+          "price": 0
+        },
+        {
+          "name": "레몬추가",
+          "price": 500
         }
       ]
     },
@@ -142,10 +162,12 @@
       "price": 2000,
       "side": [
         {
-          "side1": "얼음추가",
-          "side1Price": 0,
-          "side2": "라임추가",
-          "side2Price": 500
+          "name": "얼음추가",
+          "price": 0
+        },
+        {
+          "name": "라임추가",
+          "price": 500
         }
       ]
     },
@@ -155,10 +177,12 @@
       "price": 3000,
       "side": [
         {
-          "side1": "얼음추가",
-          "side1Price": 0,
-          "side2": "과육추가",
-          "side2Price": 1000
+          "name": "얼음추가",
+          "price": 0
+        },
+        {
+          "name": "과육추가",
+          "price": 1000
         }
       ]
     }

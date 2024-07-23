@@ -11,12 +11,12 @@ export default function Content() {
   const [category, setCateory] = useState(Object.keys(data)[0]);
   const [totalprice, setTotalPrice] = useState(0);
   const [totalcount, setTotalCount] = useState(0);
-  const [selectedMenuName, setSelectedMenuName] = useState("");
+  const [selectedMenuName, setSelectedMenuName] = useState('');
   const [selectedMenuPrice, setSelectedMenuPrice] = useState(0);
   const [selectedMenuside, setSelectedMenuSide] = useState([]);
   const [selectedTotalMenu, setSelectedTotalMenu] = useState<any[]>([]); // Change to array
 
-  const navigate= useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setMenu(data);
@@ -47,12 +47,11 @@ export default function Content() {
     sides: Array<{ name: string; price: number }>;
   }) => {
     setSelectedTotalMenu((prev) => [...prev, menuDetails]);
-    console.log(selectedTotalMenu)
+    console.log(selectedTotalMenu);
   };
 
-
   const navigateToPurchase = () => {
-    navigate("/menu/order", {state : {selectedTotalMenu}}) ;
+    navigate('/menu/order', { state: { selectedTotalMenu } });
   };
 
   return (
@@ -80,7 +79,7 @@ export default function Content() {
           )
         )}
       </div>
-      <div className="flex w-[26.6875rem] py-2 px-4 gap-x-4 gap-y-6 items-center content-center justify-start flex-wrap overflow-auto">
+      <div className="flex w-dvw py-2 px-4 gap-x-4 gap-y-6 items-center content-center justify-start flex-wrap overflow-auto ">
         {data[category].map((item) => (
           <MenuList
             key={item.id}
@@ -92,28 +91,27 @@ export default function Content() {
         ))}
       </div>
       {!modal && (
-        <div className="flex flex-col w-[26.6875rem] p-4 items-start g-[0.625rem] absolute bottom-0 border-t-1px border-t-[#F0F0F0]">
+        <div className="flex flex-col w-dvw p-4 items-start gap-2.5 absolute bottom-0 border-t-1px border-t-[#F0F0F0]">
           {totalcount === 0 ? (
-            <button className="flex p-4 justify-center items-center g-[0.625rem] self-stretch rounded-lg bg-[#F0F0F0] text-[20px] font-medium leading-[20px] text-neutral-400">
+            <button className="flex p-4 justify-center items-center gap-2.5 self-stretch rounded-lg bg-[#F0F0F0] text-xl font-medium leading-tight text-neutral-400">
               주문확인
             </button>
           ) : (
             <>
-              <div className="flex p-2 justify-between items-start self-stretch">
-                <p className="text-[18px] font-medium leading-[18px]">
-                  {totalcount}
-                </p>
-                <p className="text-[#777] text-[18px] font-medium leading-[18px]">
-                  개 선택됨
-                </p>
-                <p className="text-[#777] text-[18px] font-medium leading-[18px]">
+              <div className="flex p-2 justify-between items-start self-stretch text-[#777] text-lg font-medium leading-[18px]">
+                <span>
+                  <span className="text-black  mr-2">{totalcount}</span>개
+                  선택됨
+                </span>
+                <span className="">
                   합계
-                </p>
-                <p className="text-[#000] text-[18px] font-medium leading-[18px]">
-                  {totalprice}원
-                </p>
+                  <span className="text-black ml-2">{totalprice}원</span>
+                </span>
               </div>
-              <button onClick={navigateToPurchase} className="flex p-4 justify-center items-center g-[0.625rem] self-stretch rounded-lg bg-[#62BDF0] text-[#FFF] text-[20px] font-medium leading-[20px]">
+              <button
+                onClick={navigateToPurchase}
+                className="flex p-4 justify-center items-center gap-2.5 self-stretch rounded-lg bg-[#62BDF0] text-white text-xl font-medium leading-tight"
+              >
                 주문확인
               </button>
             </>

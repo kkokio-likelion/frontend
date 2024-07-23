@@ -8,8 +8,8 @@ import { useEffect, useState } from 'react';
 export default function OrderPage({}) {
   const location = useLocation();
   const { selectedTotalMenu } = location.state || {};
-  const [totalnum, setTotalNum]= useState(0)
-  const [totalprice, setTotalPrice] = useState(0)
+  const [totalnum, setTotalNum] = useState(0);
+  const [totalprice, setTotalPrice] = useState(0);
 
   useEffect(() => {
     let totalNum = 0;
@@ -21,12 +21,12 @@ export default function OrderPage({}) {
     setTotalNum(totalNum);
     setTotalPrice(totalPrice);
   }, [selectedTotalMenu]);
-  
+
   console.log(selectedTotalMenu);
   return (
     <>
-      <div className="flex flex-col items-start w-[411px] h-[848px]">
-        <header className="flex p-4 justify-center items-start gap-[10px] self-stretch bg-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.10)] text-[22px] font-medium leading-[22px]">
+      <div className="flex flex-col items-start w-dvw">
+        <header className="flex p-4 justify-center items-start gap-2.5 self-stretch bg-white shadow text-[22px] font-medium leading-snug">
           주문서
         </header>
         <div className="flex-1 overflow-auto w-full">
@@ -41,7 +41,7 @@ export default function OrderPage({}) {
             </div>
           ))}
         </div>
-        <BottomBar price={totalprice} count={totalnum}/>
+        <BottomBar price={totalprice} count={totalnum} />
       </div>
     </>
   );
