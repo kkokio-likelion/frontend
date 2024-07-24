@@ -1,4 +1,16 @@
-export const data = {
+export type MenuType = {
+  id: number;
+  name: string;
+  price: number;
+  side: SideType[];
+};
+
+export type SideType = {
+  name: string;
+  price: number;
+};
+
+export const data: Record<string, MenuType[]> = {
   돼지: [
     {
       id: 1,
