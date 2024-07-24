@@ -3,7 +3,7 @@ import { SetStateAction, useEffect, useState } from 'react';
 import Card from '../card/card';
 import Button from './button';
 import MenuList from './menuList';
-import data from '../../data.json';
+import { data } from 'utils/api/dummy-data';
 import { useNavigate } from 'react-router-dom';
 
 export default function Content() {
