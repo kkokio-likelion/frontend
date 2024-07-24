@@ -7,6 +7,7 @@ export default function MenuPage() {
   return (
     <>
       <div className="flex flex-col w-dvw  items-start">
+        <Header />
         <Content />
       </div>
     </>

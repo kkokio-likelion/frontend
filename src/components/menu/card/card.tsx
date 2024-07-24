@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Minusicon from './minusicon';
-import PlusIcon from './plusicon';
+import Minusicon from '../../../assets/icon/minus-icon';
+import PlusIcon from '../../../assets/icon/plus-icon';
 import Side from './side';
 
 type Props = {
@@ -9,10 +9,8 @@ type Props = {
   plus: (totalPrice: number, count: number) => void;
   modalclick: () => void;
   sidemenu: {
-    side1: string;
-    side1Price: number;
-    side2: string;
-    side2Price: number;
+    name:string;
+    price:number;
   }[];
   savemenu: (menuDetails: {
     name: string;
@@ -107,14 +105,8 @@ export default function Card({
         <div className="flex flex-col items-start self-stretch" key={index}>
           <Side
             plusSide={plusSide}
-            sidename={item.side1}
-            sideprice={item.side1Price}
-            menucheck={checkSide}
-          />
-          <Side
-            plusSide={plusSide}
-            sidename={item.side2}
-            sideprice={item.side2Price}
+            sidename={item.name}
+            sideprice={item.price}
             menucheck={checkSide}
           />
         </div>

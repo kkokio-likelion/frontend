@@ -26,11 +26,11 @@ export default function BottomBar({ price, count }: Props) {
         <div className="w-dvw flex items-start gap-4">
           <button
             onClick={navigateToMenu}
-            className="flex w-2/5 p-4 justify-center items-center gap-2 rounded-lg border border-[#AAA] leading-tight"
+            className=" w-2/5 p-4 justify-center items-center gap-2 rounded-lg border border-[#AAA] leading-tight"
           >
             더 담기
           </button>
-          <button className="flex w-3/5 p-3 justify-center items-center gap-2 rounded-lg bg-[#62BDF0] text-white text-xl font-medium leding-tight">
+          <button className="w-0 flex-1 p-3 justify-center items-center gap-2 rounded-lg bg-[#62BDF0] text-white text-xl font-medium leding-tight">
             주문하기
           </button>
         </div>

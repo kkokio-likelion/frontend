@@ -8,7 +8,6 @@ type Props = {
 export default function MenuList({
   menuName,
   menuPrice,
-  side,
   MenuClick,
 }: Props) {
   return (

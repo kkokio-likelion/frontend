@@ -14,7 +14,7 @@ export default function Content() {
   const [selectedMenuName, setSelectedMenuName] = useState('');
   const [selectedMenuPrice, setSelectedMenuPrice] = useState(0);
   const [selectedMenuside, setSelectedMenuSide] = useState([]);
-  const [selectedTotalMenu, setSelectedTotalMenu] = useState<any[]>([]); // Change to array
+  const [selectedTotalMenu, setSelectedTotalMenu] = useState<any[]>([]);
 
   const navigate = useNavigate();
 

@@ -1,4 +1,4 @@
-import Xicon from './xicon';
+import Xicon from '../../../assets/icon/x-icon';
 
 
 type Props = {
@@ -11,7 +11,6 @@ type Props = {
 export default function OptionItem({sidename, sideprice}:Props) {
   return (
     <>
-      
         <p className="flex-[1_0_0] text-[16px] font-medium leading-[16px]">
           {sidename}
         </p>

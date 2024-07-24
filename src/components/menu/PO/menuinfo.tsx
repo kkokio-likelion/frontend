@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import Minusicon from '../card/minusicon';
-import MinusIcon from '../card/minusicon';
-import PlusIcon from '../card/plusicon';
+import Minusicon from '../../../assets/icon/minus-icon';
+import MinusIcon from '../../../assets/icon/minus-icon';
+import PlusIcon from '../../../assets/icon/plus-icon';
 import OptionItem from './optionitem';
 
 type Props = {
