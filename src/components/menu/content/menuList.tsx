@@ -1,8 +1,6 @@
-import { useState } from 'react';
-
 type Props = {
   menuName: string;
-  menuPrice: string;
+  menuPrice: number;
   MenuClick: any;
   side: any;
 };
