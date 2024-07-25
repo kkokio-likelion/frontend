@@ -1,135 +1,68 @@
 import { useEffect, useState } from 'react';
-import OpenAI from 'openai';
 import useSpeech from 'utils/hooks/use-speech';
-import { Api } from 'utils/api/api';
-
-const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
+import useOrderAssistant from 'utils/hooks/use-order-assistant';
+import MicrophoneWave from './microphone-wave';
 
 export default function Main() {
   const [serverMessage, setServerMessage] =
     useState<string>('무엇을 도와드릴까요?');
+  const [lastUserMessage, setLastUserMessage] = useState<string>('');
 
   const {
     transcript: userMessage,
     isListening,
     isSpeaking,
     startListening,
-  } = useSpeech({
-    delay: 1500,
-    language: 'ko-KR',
-  });
+    getLevel,
+    audio,
+  } = useSpeech();
+
+  const { status, initAssistant, sendMessage, handleThread } =
+    useOrderAssistant();
 
   useEffect(() => {
-    if (!isListening) {
-      startListening();
-    }
+    initAssistant();
   }, []);
 
-  useEffect(() => {
-    if (userMessage && !isSpeaking) {
-      console.log('요청!!!!!');
-      const fetch = async () => {
-        const assistant = await openai.beta.assistants.retrieve(
-          import.meta.env.VITE_OPENAI_ASSISTANT_ID
-        );
-        console.log(assistant);
-        const thread = await openai.beta.threads.create({});
-        const myThreadMessage = await openai.beta.threads.messages.create(
-          thread.id,
-          {
-            role: 'user',
-            content: userMessage,
-          }
-        );
-        console.log(myThreadMessage);
-        const myRun = await openai.beta.threads.runs.create(thread.id, {
-          assistant_id: assistant.id,
-        });
-        console.log('This is the run object: ', myRun, '\n');
-
-        let keepRetrievingRun;
-        const sendedCallIds: Record<string, boolean> = {};
-
-        while (myRun.status === 'queued' || myRun.status === 'in_progress') {
-          keepRetrievingRun = await openai.beta.threads.runs.retrieve(
-            thread.id,
-            myRun.id
-          );
-          console.log(`Run status: ${keepRetrievingRun.status}`);
-
-          if (keepRetrievingRun.status === 'completed') {
-            console.log('\n');
-
-            // Step 6: Retrieve the Messages added by the Assistant to the Thread
-            const allMessages = await openai.beta.threads.messages.list(
-              thread.id
-            );
-
-            console.log(
-              '------------------------------------------------------------ \n'
-            );
-
-            // console.log('User: ', myThreadMessage.content[0].type);
-            // console.log('Assistant: ', allMessages.data[0].content[0].text);
-            if (allMessages.data[0].content[0].type === 'text') {
-              setServerMessage(allMessages.data[0].content[0].text.value);
-            }
-
-            break;
-          } else if (keepRetrievingRun.status === 'requires_action') {
-            const requiredActions =
-              keepRetrievingRun.required_action?.submit_tool_outputs.tool_calls;
-            console.log('Required Actions: ', requiredActions);
-            if (!requiredActions) {
-              break;
-            }
-            const returns = await Promise.all(
-              requiredActions.map(async (action) => {
-                let output = '{success: true}';
-                switch (action.function.name) {
-                  case 'getMenus':
-                    output = JSON.stringify(await Api.getMenus());
-                    break;
-                }
-                return {
-                  tool_call_id: action.id,
-                  output,
-                } as OpenAI.Beta.Threads.Runs.RunSubmitToolOutputsParams.ToolOutput;
-              })
-            );
-            await openai.beta.threads.runs.submitToolOutputs(thread.id, myRun.id, {
-              tool_outputs: returns,
-            });
-          } else if (
-            keepRetrievingRun.status === 'queued' ||
-            keepRetrievingRun.status === 'in_progress'
-          ) {
-            // pass
-            console.log(`Run status: ${keepRetrievingRun.status}`);
-          } else {
-            console.log(`Run status: ${keepRetrievingRun.status}`);
-            console.log(keepRetrievingRun);
-            break;
-          }
-        }
-      };
-      fetch();
+  const sendAndProcessMessage = async (message: string) => {
+    const response = await sendMessage(message);
+    if (!response) {
+      setServerMessage('서버에 연결할 수 없어요.');
+      return;
     }
-  }, [userMessage, isSpeaking]);
+    const processed = await handleThread(response);
+    console.log(processed);
+    setServerMessage(processed?.text_message || '무슨 말인지 모르겠어요.');
+  };
+
+  useEffect(() => {
+    if (userMessage && lastUserMessage !== userMessage && !isSpeaking) {
+      console.log('요청!!!!!');
+      sendAndProcessMessage(userMessage);
+      setLastUserMessage(userMessage);
+    }
+  }, [lastUserMessage, userMessage, isSpeaking]);
 
   return (
-    <main className="flex flex-col gap-12 px-8">
+    <main className="flex flex-col justify-between px-8 flex-1">
       <div className="px-4 py-2 rounded-2xl bg-white text-2xl self-start">
         {serverMessage}
       </div>
-      <img
-        src="/images/server.png"
-        className="rounded-full aspect-square w-full"
-      />
-      <div className="px-4 py-2 rounded-2xl bg-white text-2xl self-end text-lg">
-        {userMessage}
-        {isSpeaking && '...'}
+      <div className="w-1 h-[10rem] bg-red-500/10"></div>
+      <div className="flex flex-col">
+        <div className="px-4 py-2 rounded-2xl bg-white text-2xl self-end">
+          {userMessage || <>&nbsp;</>}
+          {isSpeaking && '...'}
+        </div>
+        <div className="">
+          <button onClick={startListening}>시작</button>
+          <MicrophoneWave getLevel={getLevel} />
+          <br />
+          isListening: {isListening ? 'O' : 'X'}
+          <br />
+          isSpeaking: {isSpeaking ? 'O' : 'X'}
+          {audio && <audio src={URL.createObjectURL(audio)} controls />}
+        </div>
       </div>
     </main>
   );
