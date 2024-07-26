@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import useSpeech from 'utils/hooks/use-speech';
-import useOrderAssistant from 'utils/hooks/use-order-assistant';
+import useTTS from 'utils/hooks/use-tts';
 import MicrophoneWave from './microphone-wave';
 
 export default function Main() {
@@ -20,6 +20,8 @@ export default function Main() {
   const { status, initAssistant, sendMessage, handleThread } =
     useOrderAssistant();
 
+  const { speak } = useTTS();
+
   useEffect(() => {
     initAssistant();
   }, []);
@@ -31,8 +33,24 @@ export default function Main() {
       return;
     }
     const processed = await handleThread(response);
+    // handle response
     console.log(processed);
-    setServerMessage(processed?.text_message || '무슨 말인지 모르겠어요.');
+
+    if (!processed) {
+      setServerMessage('서버에 연결할 수 없어요.');
+      return;
+    }
+
+    // display message
+    setServerMessage(processed.text_message || '무슨 말인지 모르겠어요.');
+
+    // audio message
+    if (processed.voice_message) {
+      const audio = await speak(processed.voice_message);
+      const audioUrl = URL.createObjectURL(audio);
+      const audioElement = new Audio(audioUrl);
+      audioElement.play();
+    }
   };
 
   useEffect(() => {
