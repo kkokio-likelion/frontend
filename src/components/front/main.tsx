@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import useSpeech from 'utils/hooks/use-speech';
 import useTTS from 'utils/hooks/use-tts';
 import MicrophoneWave from './microphone-wave';
+import UserInputOverlay from './user-input-overlay';
+import TextMessageBox from './text-message-box';
 
 export default function Main() {
   const [serverMessage, setServerMessage] =
@@ -63,25 +66,28 @@ export default function Main() {
 
   return (
     <main className="flex flex-col justify-between px-8 flex-1">
-      <div className="px-4 py-2 rounded-2xl bg-white text-2xl self-start">
-        {serverMessage}
+      <div className="self-start">
+        <TextMessageBox>{serverMessage}</TextMessageBox>
       </div>
-      <div className="w-1 h-[10rem] bg-red-500/10"></div>
-      <div className="flex flex-col">
-        <div className="px-4 py-2 rounded-2xl bg-white text-2xl self-end">
-          {userMessage || <>&nbsp;</>}
-          {isSpeaking && '...'}
-        </div>
-        <div className="">
-          <button onClick={startListening}>시작</button>
-          <MicrophoneWave getLevel={getLevel} />
-          <br />
-          isListening: {isListening ? 'O' : 'X'}
-          <br />
-          isSpeaking: {isSpeaking ? 'O' : 'X'}
-          {audio && <audio src={URL.createObjectURL(audio)} controls />}
-        </div>
+      <div className="flex flex-col pb-2 gap-4">
+        {(isSpeaking || isProcessing || userMessage) && (
+          <TextMessageBox color="#FFE920">
+            {userMessage}
+            {(isSpeaking || isProcessing) && '...'}
+          </TextMessageBox>
+        )}
+        <MicrophoneWave getLevel={getLevel} />
       </div>
+      <AnimatePresence>
+        {!isStarted && (
+          <UserInputOverlay
+            onClick={() => {
+              setStarted(true);
+              startListening();
+            }}
+          />
+        )}
+      </AnimatePresence>
     </main>
   );
 }
