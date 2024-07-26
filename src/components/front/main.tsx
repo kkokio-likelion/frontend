@@ -15,6 +15,7 @@ export default function Main() {
     transcript: userMessage,
     isListening,
     isSpeaking,
+    isProcessing,
     startListening,
     getLevel,
     audio,

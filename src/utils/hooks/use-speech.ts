@@ -9,6 +9,7 @@ const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
 export default function useSpeech() {
   const [transcript, setTranscript] = useState<string>('');
   const [audio, setAudio] = useState<Blob>();
+  const [isProcessing, setProcessing] = useState<boolean>(false);
 
   const {
     isListening,
@@ -48,6 +49,7 @@ export default function useSpeech() {
   };
 
   const convertSTT = async (audio: Blob) => {
+    setProcessing(true);
     try {
       const menuRes = await Api.getMenus();
       const categoryNames = Object.keys(menuRes);
@@ -83,6 +85,7 @@ export default function useSpeech() {
     } catch (err) {
       console.error(err);
     }
+    setProcessing(false);
   };
 
   const handleRecording = async () => {
@@ -110,6 +113,7 @@ export default function useSpeech() {
     transcript,
     isListening,
     isSpeaking,
+    isProcessing,
     startListening,
     stopListening,
     getLevel,
