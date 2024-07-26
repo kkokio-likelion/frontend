@@ -48,6 +48,17 @@ export default function useSpeech() {
     }
   };
 
+
+  // 멍청 방지
+  const isDumbResult = (text: string) =>
+    text.replace(/ /g, '').includes('시청해주셔서감사합니다') ||
+    text.replace(/ /g, '').includes('다음중하나입니다') ||
+    text.replace(/ /g, '').includes('구독') ||
+    text.replace(/ /g, '').includes('좋아요,알림설정') ||
+    text.replace(/ /g, '').includes('한음악') ||
+    text.replace(/ /g, '').includes('식당에서메뉴를주문하는상황이며') ||
+    text.replace(/ /g, '').includes('메뉴1,2,3');
+
   const convertSTT = async (audio: Blob) => {
     setProcessing(true);
     try {
@@ -66,20 +77,7 @@ export default function useSpeech() {
           ',' +
           categoryNames.join(','),
       });
-      if (
-        res.text &&
-        // 멍청 방지
-        !(
-          res.text.replace(/ /g, '').includes('시청해주셔서감사합니다') ||
-          res.text.replace(/ /g, '').includes('다음중하나입니다') ||
-          res.text.replace(/ /g, '').includes('구독,좋아요') ||
-          res.text.replace(/ /g, '').includes('좋아요,알림설정') ||
-          res.text
-            .replace(/ /g, '')
-            .includes('식당에서메뉴를주문하는상황이며') ||
-          res.text.replace(/ /g, '').includes('메뉴1,2,3')
-        )
-      ) {
+      if (res.text && !isDumbResult(res.text)) {
         setTranscript(res.text);
       }
     } catch (err) {
