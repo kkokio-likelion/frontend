@@ -19,7 +19,7 @@ export default function useSpeech() {
     startListening,
     stopListening,
   } = useMicrophone({
-    threshold: -25,
+    threshold: -20,
   });
 
   const startRecording = async () => {
