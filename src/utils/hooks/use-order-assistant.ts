@@ -5,11 +5,26 @@ import { Api } from 'utils/api/api';
 export type OrderAssistantResponse = {
   voice_message: string;
   text_message: string;
-  data: {
-    called_function_name: string;
-    data: any;
-  };
+  display_action: OrderAssistantDisplayAction;
+  called_function_name: FunctionName[];
 };
+
+export type OrderAssistantDisplayAction =
+  | 'LIST_CATEGORY'
+  | 'LIST_MENU'
+  | 'MENU_DETAILS'
+  | 'ADDED_MENU'
+  | 'SHOW_ORDERS'
+  | 'ORDER_COMPLETED'
+  | 'NO_ACTION';
+
+export type FunctionName =
+  | 'getMenus'
+  | 'getPopularMenus'
+  | 'addMenuOrder'
+  | 'editMenuOrder'
+  | 'removeMenuOrder'
+  | 'submitOrder';
 
 const assistantId = import.meta.env.VITE_OPENAI_ASSISTANT_ID;
 const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
@@ -29,6 +44,23 @@ export default function useOrderAssistant() {
     setThread(_thread);
   }, [assistant, thread]);
 
+  const handleFunctionRequest = useCallback(
+    async (functionName: FunctionName, args: string): Promise<string> => {
+      switch (functionName) {
+        case 'getMenus':
+          return JSON.stringify(await Api.getMenus());
+        case 'submitOrder':
+          return JSON.stringify({
+            success: true,
+            order_id: 100 + Math.floor(Math.random() * 899),
+          });
+        default:
+          return '{success: true}';
+      }
+    },
+    []
+  );
+
   const handleThread = useCallback(
     async (
       run: OpenAI.Beta.Threads.Runs.Run
@@ -36,8 +68,6 @@ export default function useOrderAssistant() {
       if (!thread || !assistant) {
         return null;
       }
-
-      const sendedCallIds: Record<string, boolean> = {};
 
       while (run.status === 'queued' || run.status === 'in_progress') {
         const keepRetrievingRun = await openai.beta.threads.runs.retrieve(
@@ -72,12 +102,10 @@ export default function useOrderAssistant() {
             }
             const returns = await Promise.all(
               requiredActions.map(async (action) => {
-                let output = '{success: true}';
-                switch (action.function.name) {
-                  case 'getMenus':
-                    output = JSON.stringify(await Api.getMenus());
-                    break;
-                }
+                let output = await handleFunctionRequest(
+                  action.function.name as FunctionName,
+                  action.function.arguments
+                );
                 return {
                   tool_call_id: action.id,
                   output,
