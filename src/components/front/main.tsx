@@ -10,6 +10,7 @@ import UserInputOverlay from './user-input-overlay';
 import TextMessageBox from './text-message-box';
 
 export default function Main() {
+  const [isStarted, setStarted] = useState<boolean>(false);
   const [serverMessage, setServerMessage] =
     useState<string>('무엇을 도와드릴까요?');
   const [displayAction, setDisplayAction] =
