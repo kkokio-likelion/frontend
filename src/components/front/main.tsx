@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import useSpeech from 'utils/hooks/use-speech';
+import useOrderAssistant, {
+  OrderAssistantDisplayAction,
+} from 'utils/hooks/use-order-assistant';
 import useTTS from 'utils/hooks/use-tts';
 import MicrophoneWave from './microphone-wave';
 import UserInputOverlay from './user-input-overlay';
@@ -9,6 +12,8 @@ import TextMessageBox from './text-message-box';
 export default function Main() {
   const [serverMessage, setServerMessage] =
     useState<string>('무엇을 도와드릴까요?');
+  const [displayAction, setDisplayAction] =
+    useState<OrderAssistantDisplayAction>('NO_ACTION');
   const [lastUserMessage, setLastUserMessage] = useState<string>('');
 
   const {
@@ -18,6 +23,7 @@ export default function Main() {
     isProcessing,
     startListening,
     getLevel,
+    setContext,
     audio,
   } = useSpeech();
 
@@ -55,6 +61,10 @@ export default function Main() {
       const audioElement = new Audio(audioUrl);
       audioElement.play();
     }
+
+    // display action
+    setDisplayAction(processed.display_action);
+    setContext(processed.display_action);
   };
 
   useEffect(() => {
@@ -69,6 +79,11 @@ export default function Main() {
     <main className="flex flex-col justify-between px-8 flex-1">
       <div className="self-start">
         <TextMessageBox>{serverMessage}</TextMessageBox>
+      </div>
+      <div>
+        {displayAction && (
+          <TextMessageBox>화면 표시: {displayAction}</TextMessageBox>
+        )}
       </div>
       <div className="flex flex-col pb-2 gap-4">
         {(isSpeaking || isProcessing || userMessage) && (
