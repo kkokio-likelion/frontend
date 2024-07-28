@@ -1,11 +1,22 @@
 // Content.tsx
-import { SetStateAction, useEffect, useState } from 'react';
-import Card from '../card/card';
+import { useEffect, useState } from 'react';
+import Card from './card';
 import Button from './button';
-import MenuList from './menuList';
+import MenuList from './menu-list';
 import { data } from 'utils/api/dummy-data';
 import { useNavigate } from 'react-router-dom';
 
+type Side = {
+  name: string;
+  price: number;
+};
+
+type Menu = {
+  name: string;
+  price: number;
+  count: number;
+  sides: Array<Side>;
+};
 export default function Content() {
   const [menu, setMenu] = useState({});
   const [category, setCateory] = useState(Object.keys(data)[0]);
@@ -13,8 +24,8 @@ export default function Content() {
   const [totalcount, setTotalCount] = useState(0);
   const [selectedMenuName, setSelectedMenuName] = useState('');
   const [selectedMenuPrice, setSelectedMenuPrice] = useState(0);
-  const [selectedMenuside, setSelectedMenuSide] = useState([]);
-  const [selectedTotalMenu, setSelectedTotalMenu] = useState<any[]>([]);
+  const [selectedMenuside, setSelectedMenuSide] = useState<Side[]>([]);
+  const [selectedTotalMenu, setSelectedTotalMenu] = useState<Menu[]>([]);
 
   const navigate = useNavigate();
 
@@ -24,28 +35,23 @@ export default function Content() {
 
   const [modal, setModal] = useState(false);
 
-  const buttonClick = (menu: SetStateAction<string>) => {
+  const clickButton = (menu: string) => {
     setCateory(menu);
   };
 
-  const menuPlus = (price: number, count: number) => {
-    setTotalPrice((prev) => prev + price * count);
+  const plusMenu = (price: number, count: number) => {
+    setTotalPrice((prev) => prev + price);
     setTotalCount((prev) => prev + count);
   };
 
-  const menuClick = (name: string, price: number, side: any) => {
+  const clickMenu = (name: string, price: number, side: Array<Side>) => {
     setModal(true);
     setSelectedMenuName(name);
     setSelectedMenuPrice(price);
     setSelectedMenuSide(side);
   };
 
-  const saveMenu = (menuDetails: {
-    name: string;
-    price: number;
-    count: number;
-    sides: Array<{ name: string; price: number }>;
-  }) => {
+  const saveMenu = (menuDetails: Menu) => {
     setSelectedTotalMenu((prev) => [...prev, menuDetails]);
     console.log(selectedTotalMenu);
   };
@@ -58,7 +64,7 @@ export default function Content() {
     <>
       {modal && (
         <Card
-          plus={menuPlus}
+          plus={plusMenu}
           modalclick={() => setModal(false)}
           menuName={selectedMenuName}
           menuPrice={selectedMenuPrice}
@@ -69,24 +75,24 @@ export default function Content() {
       <div className="flex items-start gap-x-3 py-4 px-2.5 overflow-auto">
         {Object.keys(menu).map((key) =>
           category === key ? (
-            <Button key={key} selected={true} onClick={buttonClick}>
+            <Button key={key} selected={true} onClick={clickButton} value={key}>
               {key}
             </Button>
           ) : (
-            <Button selected={false} onClick={buttonClick}>
+            <Button selected={false} onClick={clickButton} value={key}>
               {key}
             </Button>
           )
         )}
       </div>
-      <div className="flex w-dvw py-2 px-4 gap-x-4 gap-y-6 items-center content-center justify-start flex-wrap overflow-auto ">
+      <div className="px-4 py-2 items-center justify-center inline-flex gap-4 overflow-auto">
         {data[category].map((item) => (
           <MenuList
             key={item.id}
             menuName={item.name}
             menuPrice={item.price}
             side={item.side}
-            MenuClick={() => menuClick(item.name, item.price, item.side)}
+            MenuClick={() => clickMenu(item.name, item.price, item.side)}
           />
         ))}
       </div>

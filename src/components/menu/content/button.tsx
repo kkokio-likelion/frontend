@@ -1,20 +1,21 @@
-import { useState } from 'react';
+import { ReactNode, SetStateAction, useState } from 'react';
 
 type Props = {
   children: React.ReactNode;
   selected: boolean;
-  onClick: any;
+  onClick: (menu: string) => void;
+  value: string;
 };
 
-export default function Button({ children, onClick, selected }: Props) {
+export default function Button({ children, onClick, selected, value }: Props) {
   return (
     <>
       <button
-        onClick={() => onClick(children)}
+        onClick={() => onClick(value)}
         className={
           selected
-            ? 'flex p-2 px-4 justify-center items-center gap-2.5  bg-black text-white rounded-[17px]'
-            : 'flex p-2 px-4 justify-center items-center gap-2.5 bg-white text-black rounded-[17px] border border-[#dddddd]'
+            ? 'h-8 px-4 py-2 bg-black rounded-[17px] justify-center items-center gap-2.5 inline-flex text-white text-base font-medium leading-none'
+            : 'h-8 px-4 py-2 bg-white rounded-[17px] border border-[#dddddd] justify-center items-center gap-2.5 inline-flex text-black text-base font-medium leading-none '
         }
       >
         {children}
