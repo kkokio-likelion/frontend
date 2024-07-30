@@ -23,6 +23,7 @@ export default function Main() {
     isSpeaking,
     isProcessing,
     startListening,
+    stopListening,
     getLevel,
     setContext,
     audio,
@@ -35,6 +36,9 @@ export default function Main() {
 
   useEffect(() => {
     initAssistant();
+    return () => {
+      stopListening();
+    };
   }, []);
 
   const sendAndProcessMessage = async (message: string) => {
