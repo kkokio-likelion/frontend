@@ -60,6 +60,7 @@ export default function useMicrophone({
   }, []);
 
   const stopListening = useCallback(() => {
+    mic?.close();
     mic?.dispose();
     gate?.dispose();
     meter?.dispose();
