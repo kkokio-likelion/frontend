@@ -92,7 +92,7 @@ export default function Main() {
       </div>
       <div className="flex flex-col pb-2 gap-4">
         {(isSpeaking || isProcessing || userMessage) && (
-          <TextMessageBox color="#FFE920">
+          <TextMessageBox color="yellow">
             {userMessage}
             {(isSpeaking || isProcessing) && '...'}
           </TextMessageBox>
