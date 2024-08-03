@@ -13,9 +13,9 @@ function App() {
         <Routes>
           <Route path="/:storeId" element={<FrontPage />}></Route>
           <Route path="/:storeId/menu" element={<MenuPage />}></Route>
-          <Route path="*" element={<NotfoundPage />}></Route>
           <Route path="/:storeId/menu/order" element={<OrderPage/>}></Route>
           <Route path="/:storeId/menu/test" element={<Content/>}></Route>
+          <Route path="*" element={<NotfoundPage />}></Route>
         </Routes>
       </BrowserRouter>
     </div>
