@@ -8,6 +8,7 @@ import useTTS from 'utils/hooks/use-tts';
 import MicrophoneWave from './microphone-wave';
 import UserInputOverlay from './user-input-overlay';
 import TextMessageBox from './text-message-box';
+import { useParams } from 'react-router-dom';
 
 export default function Main() {
   const [isStarted, setStarted] = useState<boolean>(false);

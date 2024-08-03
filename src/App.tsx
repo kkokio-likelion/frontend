@@ -11,11 +11,11 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<FrontPage />}></Route>
-          <Route path="/menu" element={<MenuPage />}></Route>
+          <Route path="/:storeId" element={<FrontPage />}></Route>
+          <Route path="/:storeId/menu" element={<MenuPage />}></Route>
           <Route path="*" element={<NotfoundPage />}></Route>
-          <Route path="/menu/order" element={<OrderPage/>}></Route>
-          <Route path="/menu/test" element={<Content/>}></Route>
+          <Route path="/:storeId/menu/order" element={<OrderPage/>}></Route>
+          <Route path="/:storeId/menu/test" element={<Content/>}></Route>
         </Routes>
       </BrowserRouter>
     </div>
