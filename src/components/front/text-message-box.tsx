@@ -1,19 +1,31 @@
 import { ReactNode } from 'react';
+import { motion } from 'framer-motion';
+import AccountCircleIcon from 'assets/icon/account-circle';
 
 export interface Props {
   children?: ReactNode;
-  color?: string;
+  role: 'system' | 'user';
 }
 
-export default function TextMessageBox({ children, color = 'white' }: Props) {
+export default function TextMessageBox({ children, role }: Props) {
+  const icon =
+    role === 'system' ? (
+      <img src="/images/server.png" className="h-full object-cover" />
+    ) : (
+      <AccountCircleIcon className="w-[4rem] h-[4rem] -top-1 -left-1 relative rounded-full overflow-hidden" />
+    );
   return (
-    <div
+    <motion.div
       className={
-        'px-4 py-2 rounded-2xl text-2xl self-end shadow' +
-        (color === 'white' ? ' bg-white' : ' bg-[#FFE920]')
+        'flex flex-row items-center text-2xl' +
+        (role === 'system' ? ' text-blue-800' : ' text-yellow-900')
       }
+      initial={{ opacity: 0, left: '-8px', position: 'relative' }}
+      animate={{ opacity: 1, left: '0px', position: 'relative' }}
+      layout
     >
-      {children}
-    </div>
+      <div className="w-14 h-14 rounded-full overflow-hidden">{icon}</div>
+      <span className="flex px-4 py-2">{children}</span>
+    </motion.div>
   );
 }
