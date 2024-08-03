@@ -4,6 +4,7 @@ import MenuPage from 'pages/menu.page';
 import NotfoundPage from 'pages/notfound.page';
 import './App.css';
 import OrderPage from 'components/menu/order-page/main-order-page';
+import Content from 'components/tablet-menu/content/content';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/menu" element={<MenuPage />}></Route>
           <Route path="*" element={<NotfoundPage />}></Route>
           <Route path="/menu/order" element={<OrderPage/>}></Route>
+          <Route path="/menu/test" element={<Content/>}></Route>
         </Routes>
       </BrowserRouter>
     </div>
