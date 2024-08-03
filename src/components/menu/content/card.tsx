@@ -73,7 +73,11 @@ export default function Card({
   };
 
   return (
-    <div onClick={modalclick} className='w-dvw h-dvh bg-black/20  absolute'>
+    <>
+      <div
+        onClick={modalclick}
+        className="w-dvw h-dvh bg-black/20  absolute"
+      ></div>
       <div className="fixed bottom-0 w-dvw border-l-4 border-t-4 z-50 p-4 bg-white rounded-tl-2xl rounded-tr-2xl flex-col justify-start items-start gap-4 inline-flex">
         <div className="self-stretch py-2 justify-start items-center gap-4 inline-flex">
           <div className="w-[110px] h-[110px] p-1 border justify-start items-center gap-2.5 inline-flex">
@@ -127,6 +131,6 @@ export default function Card({
           {(menuPrice + totalside) * count}원 담기
         </button>
       </div>
-    </div>
+    </>
   );
 }
