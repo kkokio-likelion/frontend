@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Minusicon from '../../../assets/icon/minus-icon';
-import PlusIcon from '../../../assets/icon/plus-icon';
+import Minusicon from 'assets/icon/minus-icon';
+import PlusIcon from 'assets/icon/plus-icon';
 import Side from './side';
 
 type side = {
@@ -82,7 +82,7 @@ export default function Card({
         <div className="self-stretch py-2 justify-start items-center gap-4 inline-flex">
           <div className="w-[110px] h-[110px] p-1 border justify-start items-center gap-2.5 inline-flex">
             <img
-              src="public\images\chicken.webp"
+              src="https://via.placeholder.com/57x29"
               className="w-[102px] h-[63px]"
             />
           </div>

@@ -1,6 +1,6 @@
 // Content.tsx
 import { useEffect, useState } from 'react';
-import Card from './card';
+import Card from 'components/modal-page/card'
 import Button from './button';
 import MenuList from './menu-list';
 import { data } from 'utils/api/dummy-data';

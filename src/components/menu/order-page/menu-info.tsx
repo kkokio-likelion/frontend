@@ -1,6 +1,6 @@
 import Minusicon from '../../../assets/icon/minus-icon';
 import PlusIcon from '../../../assets/icon/plus-icon';
-import OptionItem from './option-item';
+import OptionItem from './side-item';
 
 type Side = {
   name: string;

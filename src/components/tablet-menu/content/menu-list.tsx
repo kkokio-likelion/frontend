@@ -37,20 +37,3 @@ export default function MenuList({ menuName, menuPrice, MenuClick }: Props) {
     </>
   );
 }
-
-<div className="flex-col justify-start items-start gap-3 inline-flex">
-  <div className="w-[200px] h-[200px] p-4 border border-[#dddddd] justify-start items-center gap-2.5 inline-flex">
-    <img
-      className="grow shrink basis-0 h-[88px]"
-      src="https://via.placeholder.com/168x88"
-    />
-  </div>
-  <div className="self-stretch h-[42px] flex-col justify-start items-start gap-1 flex">
-    <div className="self-stretch text-black text-lg font-medium leading-snug">
-      삼겹살
-    </div>
-    <div className="self-stretch text-black text-base font-normal leading-none">
-      18,000원
-    </div>
-  </div>
-</div>;

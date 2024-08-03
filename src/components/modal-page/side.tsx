@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import CheckIcon from '../../../assets/icon/check-icon';
+import CheckIcon from 'assets/icon/check-icon';
 
 type MenuCheckCallback = (
   checked: boolean,
