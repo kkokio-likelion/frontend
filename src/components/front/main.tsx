@@ -23,6 +23,7 @@ export default function Main() {
     isSpeaking,
     isProcessing,
     startListening,
+    stopListening,
     getLevel,
     setContext,
     audio,
@@ -35,6 +36,9 @@ export default function Main() {
 
   useEffect(() => {
     initAssistant();
+    return () => {
+      stopListening();
+    };
   }, []);
 
   const sendAndProcessMessage = async (message: string) => {
@@ -88,7 +92,7 @@ export default function Main() {
       </div>
       <div className="flex flex-col pb-2 gap-4">
         {(isSpeaking || isProcessing || userMessage) && (
-          <TextMessageBox color="#FFE920">
+          <TextMessageBox color="yellow">
             {userMessage}
             {(isSpeaking || isProcessing) && '...'}
           </TextMessageBox>
