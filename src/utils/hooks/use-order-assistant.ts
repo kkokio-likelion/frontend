@@ -1,6 +1,21 @@
 import { useCallback, useState } from 'react';
 import OpenAI from 'openai';
-import { Api } from 'utils/api/api';
+import {
+  CategoryControllerApi,
+  Configuration,
+  MenuControllerApi,
+  OrderControllerApi,
+  StoreControllerApi,
+} from 'utils/api';
+import useOrderCart from './use-order-cart';
+
+const apiConfig = new Configuration({
+  basePath: import.meta.env.VITE_API_BASE_URL as string,
+});
+const storeApi = new StoreControllerApi(apiConfig);
+const categoryApi = new CategoryControllerApi(apiConfig);
+const menuApi = new MenuControllerApi(apiConfig);
+const orderApi = new OrderControllerApi(apiConfig);
 
 export type OrderAssistantResponse = {
   voice_message: string;
@@ -19,8 +34,9 @@ export type OrderAssistantDisplayAction =
   | 'NO_ACTION';
 
 export type FunctionName =
+  | 'getCategory'
   | 'getMenus'
-  | 'getPopularMenus'
+  | 'getMenusByCategory'
   | 'addMenuOrder'
   | 'editMenuOrder'
   | 'removeMenuOrder'
@@ -30,12 +46,13 @@ const assistantId = import.meta.env.VITE_OPENAI_ASSISTANT_ID;
 const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
 const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
 
-export default function useOrderAssistant() {
+export default function useOrderAssistant(storeId: number) {
   const [status, setStatus] =
     useState<OpenAI.Beta.Threads.Runs.RunStatus>('queued');
   const [thread, setThread] = useState<OpenAI.Beta.Threads.Thread>();
   const [assistant, setAssistant] =
     useState<OpenAI.Beta.Assistants.Assistant>();
+  const { menus, addMenu, removeMenu } = useOrderCart();
 
   const initAssistant = useCallback(async () => {
     const _assistant = await openai.beta.assistants.retrieve(assistantId);
@@ -47,13 +64,52 @@ export default function useOrderAssistant() {
   const handleFunctionRequest = useCallback(
     async (functionName: FunctionName, args: string): Promise<string> => {
       switch (functionName) {
+        case 'getCategory':
+          return JSON.stringify(
+            await categoryApi.getCategoryInfo1({
+              storeId,
+              pageable: { page: 1, size: 50 },
+            })
+          );
+        case 'getMenusByCategory':
+          return JSON.stringify(
+            await menuApi.getMenuInfoStoreIdAndcategoryId({
+              storeId,
+              categoryId: parseInt(args),
+              pageable: { page: 1, size: 100 },
+            })
+          );
         case 'getMenus':
-          return JSON.stringify(await Api.getMenus());
+          return JSON.stringify(
+            await menuApi.getMenuInfoStoreId({
+              storeId,
+              pageable: { page: 1, size: 100 },
+            })
+          );
         case 'submitOrder':
-          return JSON.stringify({
-            success: true,
-            order_id: 100 + Math.floor(Math.random() * 899),
+          const res = await orderApi.createOrderInfo({
+            storeId,
+            orderInfoRequestDTO: menus.map((menu) => ({
+              menuId: menu.id,
+              amount: menu.count,
+            })),
           });
+          return JSON.stringify(res);
+        case 'addMenuOrder': {
+          const { menuId, count, sideIds } = JSON.parse(args);
+          addMenu(menuId, count, sideIds);
+          return JSON.stringify(menus);
+        }
+        case 'editMenuOrder': {
+          const { menuId, count, sideIds } = JSON.parse(args);
+          const result = addMenu(menuId, count, sideIds);
+          return JSON.stringify(result);
+        }
+        case 'removeMenuOrder': {
+          const { menuId } = JSON.parse(args);
+          const result = removeMenu(menuId);
+          return JSON.stringify(result);
+        }
         default:
           return '{success: true}';
       }
@@ -158,5 +214,5 @@ export default function useOrderAssistant() {
     [thread, assistant]
   );
 
-  return { status, initAssistant, sendMessage, handleThread };
+  return { status, menus, initAssistant, sendMessage, handleThread };
 }

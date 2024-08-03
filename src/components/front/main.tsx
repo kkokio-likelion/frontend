@@ -18,6 +18,8 @@ export default function Main() {
     useState<OrderAssistantDisplayAction>('NO_ACTION');
   const [lastUserMessage, setLastUserMessage] = useState<string>('');
 
+  const { storeId } = useParams();
+
   const {
     transcript: userMessage,
     isListening,
@@ -28,10 +30,10 @@ export default function Main() {
     getLevel,
     setContext,
     audio,
-  } = useSpeech();
+  } = useSpeech(parseInt(storeId!));
 
   const { status, initAssistant, sendMessage, handleThread } =
-    useOrderAssistant();
+    useOrderAssistant(parseInt(storeId!));
 
   const { speak } = useTTS();
 

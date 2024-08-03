@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'react';
 import OpenAI from 'openai';
 import useMicrophone from './use-microphone';
-import { Api } from 'utils/api/api';
+import { Configuration, MenuControllerApi } from 'utils/api';
 import { OrderAssistantDisplayAction } from './use-order-assistant';
 
 const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
 const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
 
-export default function useSpeech() {
+const apiConfig = new Configuration({
+  basePath: import.meta.env.VITE_API_BASE_URL as string,
+});
+const menuApi = new MenuControllerApi(apiConfig);
+
+export default function useSpeech(storeId: number) {
   const [transcript, setTranscript] = useState<string>('');
   const [audio, setAudio] = useState<Blob>();
   const [isProcessing, setProcessing] = useState<boolean>(false);
@@ -55,14 +60,18 @@ export default function useSpeech() {
 
   // TODO: 더 많은 상황 정보 넣을 수 있게(현재 주문서에 있는 메뉴 등)
   const getPromptByContext = async (context: OrderAssistantDisplayAction) => {
-    const menuRes = await Api.getMenus();
-    const categoryNames = Object.keys(menuRes);
-    const sideNames = Object.values(menuRes).flatMap((menu) =>
-      menu.flatMap((m) => m.side.map((o) => o.name.replace(/,/g, '_')))
-    );
-    const menuNames = Object.values(menuRes).flatMap((menu) =>
-      menu.map((m) => m.name.replace(/,/g, '_'))
-    );
+    const menuRes = await menuApi.getMenuInfoStoreId({
+      storeId,
+      pageable: { page: 0, size: 1000 },
+    });
+    const menus = menuRes.content || [];
+    const categoryNames = [
+      ...new Set(menus.map((menu) => menu.categoryDtoOnly?.categoryName)),
+    ];
+    // const sideNames = Object.values(menuRes).flatMap((menu) =>
+    //   menu.flatMap((m) => m.side.map((o) => o.name.replace(/,/g, '_')))
+    // );
+    const menuNames = menus.map((menu) => menu.menuName!.replace(/,/g, '_'));
     switch (context) {
       case 'NO_ACTION':
       case 'LIST_CATEGORY':
@@ -81,9 +90,9 @@ export default function useSpeech() {
       case 'MENU_DETAILS':
         return (
           '식당에서 메뉴를 주문하는 상황이며 어떤 메뉴를 고른 뒤 추가 옵션을 선택하는 상황입니다. 옵션을 선택하지 않고 다른 메뉴를 고를 수 있으며 메뉴와 옵션 이름은 다음 중 하나입니다: ' +
-          menuNames.join(',') +
-          ',' +
-          sideNames.join(',')
+          menuNames.join(',')
+          // ',' +
+          // sideNames.join(',')
         );
       case 'ADDED_MENU':
         return (
