@@ -19,7 +19,7 @@ export default function BottomBar({ price, count }: Props) {
         </div>
         <div className="w-full flex items-start gap-4">
           <Link
-            className="flex w-2/5 p-4 justify-center items-center gap-2 rounded-lg border border-[#AAA] leading-tight"
+            className="flex w-2/5 p-4 justify-center items-center gap-2 rounded-lg border border-[#AAA] text-xl font-medium leading-tight text-black/75"
             to="/menu"
           >
             더 담기

@@ -72,7 +72,7 @@ export default function Content() {
           savemenu={saveMenu}
         />
       )}
-      <div className="flex items-start gap-x-3 py-4 px-2.5 overflow-auto">
+      <div className="flex whitespace-nowrap items-start gap-x-3 py-4 px-2.5 overflow-x-auto">
         {Object.keys(menu).map((key) =>
           category === key ? (
             <Button key={key} selected={true} onClick={clickButton} value={key}>
@@ -85,7 +85,7 @@ export default function Content() {
           )
         )}
       </div>
-      <div className="px-4 py-2 items-center justify-center inline-flex gap-4 overflow-auto">
+      <div className="flex flex-wrap px-4 py-2 items-center justify-center gap-4 overflow-auto">
         {data[category].map((item) => (
           <MenuList
             key={item.id}
@@ -97,7 +97,7 @@ export default function Content() {
         ))}
       </div>
       {!modal && (
-        <div className="flex flex-col w-dvw p-4 items-start gap-2.5 absolute bottom-0 border-t-1px border-t-[#F0F0F0]">
+        <div className="flex flex-col w-dvw p-4 items-start gap-2.5 fixed bottom-0 border-t-1px border-t-[#F0F0F0] bg-white">
           {totalcount === 0 ? (
             <button className="flex p-4 justify-center items-center gap-2.5 self-stretch rounded-lg bg-[#F0F0F0] text-xl font-medium leading-tight text-neutral-400">
               주문확인
