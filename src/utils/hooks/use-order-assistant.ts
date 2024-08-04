@@ -68,7 +68,7 @@ export default function useOrderAssistant(storeId: number) {
           return JSON.stringify(
             await categoryApi.getCategoryInfo1({
               storeId,
-              pageable: { page: 1, size: 50 },
+              pageable: { page: 0, size: 100 },
             })
           );
         case 'getMenusByCategory':
@@ -76,14 +76,14 @@ export default function useOrderAssistant(storeId: number) {
             await menuApi.getMenuInfoStoreIdAndcategoryId({
               storeId,
               categoryId: parseInt(args),
-              pageable: { page: 1, size: 100 },
+              pageable: { page: 0, size: 100 },
             })
           );
         case 'getMenus':
           return JSON.stringify(
             await menuApi.getMenuInfoStoreId({
               storeId,
-              pageable: { page: 1, size: 100 },
+              pageable: { page: 0, size: 100 },
             })
           );
         case 'submitOrder':
