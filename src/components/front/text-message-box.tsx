@@ -17,15 +17,15 @@ export default function TextMessageBox({ children, role }: Props) {
   return (
     <motion.div
       className={
-        'flex flex-row items-center text-2xl' +
+        'flex flex-row items-start text-2xl' +
         (role === 'system' ? ' text-blue-800' : ' text-yellow-900')
       }
       initial={{ opacity: 0, left: '-8px', position: 'relative' }}
       animate={{ opacity: 1, left: '0px', position: 'relative' }}
       layout
     >
-      <div className="w-14 h-14 rounded-full overflow-hidden">{icon}</div>
-      <span className="flex px-4 py-2">{children}</span>
+      <div className="w-14 h-14 min-w-14 min-h-14 rounded-full overflow-hidden">{icon}</div>
+      <span className="flex px-4 py-3">{children}</span>
     </motion.div>
   );
 }
