@@ -271,7 +271,8 @@ export class MenuControllerApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         if (requestParameters['pageable'] != null) {
-            queryParameters['pageable'] = requestParameters['pageable'];
+            queryParameters['page'] = requestParameters['pageable']['page'];
+            queryParameters['size'] = requestParameters['pageable']['size'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -332,7 +333,8 @@ export class MenuControllerApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         if (requestParameters['pageable'] != null) {
-            queryParameters['pageable'] = requestParameters['pageable'];
+            queryParameters['page'] = requestParameters['pageable']['page'];
+            queryParameters['size'] = requestParameters['pageable']['size'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
