@@ -25,7 +25,7 @@ export default function TextMessageBox({ children, role }: Props) {
       layout
     >
       <div className="w-14 h-14 min-w-14 min-h-14 rounded-full overflow-hidden">{icon}</div>
-      <span className="flex px-4 py-3">{children}</span>
+      <span className="flex px-4 py-3 pb-0">{children}</span>
     </motion.div>
   );
 }
