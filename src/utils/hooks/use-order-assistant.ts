@@ -32,6 +32,7 @@ export type OrderAssistantResponse = {
 };
 
 export type OrderAssistantDisplayActionState =
+  | 'INITIAL'
   | 'LIST_CATEGORY'
   | 'LIST_MENU'
   | 'MENU_DETAILS'
