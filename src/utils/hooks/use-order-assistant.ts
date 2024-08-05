@@ -71,14 +71,16 @@ export default function useOrderAssistant(storeId: number) {
               pageable: { page: 0, size: 100 },
             })
           );
-        case 'getMenusByCategory':
+        case 'getMenusByCategory': {
+          const { categoryId } = JSON.parse(args) as { categoryId: number };
           return JSON.stringify(
             await menuApi.getMenuInfoStoreIdAndcategoryId({
               storeId,
-              categoryId: parseInt(args),
+              categoryId,
               pageable: { page: 0, size: 100 },
             })
           );
+        }
         case 'getMenus':
           return JSON.stringify(
             await menuApi.getMenuInfoStoreId({
