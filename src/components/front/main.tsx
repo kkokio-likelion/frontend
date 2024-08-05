@@ -103,10 +103,11 @@ export default function Main() {
   }, [lastUserMessage, userMessage, isSpeaking]);
 
   return (
-    <main className="flex flex-col justify-between flex-1">
-      <div className="bg-white h-1/2 rounded-b-3xl">{displayAction}</div>
-      <div className="self-start px-8 flex-1 w-full h-0 overflow-y-scroll scrollbar-none">
-        <div className="flex flex-col-reverse gap-2 py-4">
+    <main className="flex flex-col justify-between h-0 flex-1">
+      <div className="bg-white h-2/3 rounded-b-3xl">
+      </div>
+      <div className="w-full h-0 flex-1 relative">
+        <ul className="w-full h-full flex flex-col-reverse gap-4 py-4 px-8 pb-16 overflow-y-scroll scrollbar-none">
           {(isSpeaking || isProcessing) && (
             <TextMessageBox role="user">
               {userMessage}
@@ -118,9 +119,11 @@ export default function Main() {
               {msg.content}
             </TextMessageBox>
           ))}
-        </div>
+        </ul>
+        <div className="w-full h-16 bg-gradient-to-b from-gray-50 to-transparent absolute top-0"></div>
+        <div className="w-full h-28 bg-gradient-to-t from-10% from-gray-50 to-transparent absolute bottom-0"></div>
       </div>
-      <div className="py-4">
+      <div className="w-full px-8 py-4 fixed bottom-2 mx-auto">
         <MicrophoneWave getLevel={getLevel} />
       </div>
       <AnimatePresence>
