@@ -23,6 +23,11 @@ export type OrderAssistantDisplayAction = {
   state: OrderAssistantDisplayActionState;
   category_id: number | null;
   menu_id: number | null;
+  added_menus: {
+    menu_id: number;
+    menu_amount: number;
+    extra_id: number[];
+  }[];
   order_id: number | null;
 };
 
@@ -117,14 +122,28 @@ export default function useOrderAssistant(storeId: number) {
           });
           return JSON.stringify(res);
         case 'addMenuOrder': {
-          const { menuId, count, sideIds } = JSON.parse(args);
-          addMenu(menuId, count, sideIds);
-          return JSON.stringify(menus);
+          const { menuId, count, extraIds } = JSON.parse(args);
+          return JSON.stringify(
+            addMenu(
+              menuId,
+              count,
+              extraIds
+                ? (extraIds as string).split(',').map((id) => parseInt(id))
+                : []
+            )
+          );
         }
         case 'editMenuOrder': {
-          const { menuId, count, sideIds } = JSON.parse(args);
-          const result = addMenu(menuId, count, sideIds);
-          return JSON.stringify(result);
+          const { menuId, count, extraIds } = JSON.parse(args);
+          return JSON.stringify(
+            addMenu(
+              menuId,
+              count,
+              extraIds
+                ? (extraIds as string).split(',').map((id) => parseInt(id))
+                : []
+            )
+          );
         }
         case 'removeMenuOrder': {
           const { menuId } = JSON.parse(args);
@@ -135,7 +154,7 @@ export default function useOrderAssistant(storeId: number) {
           return '{success: true}';
       }
     },
-    []
+    [addMenu, removeMenu]
   );
 
   const handleThread = useCallback(
@@ -163,6 +182,11 @@ export default function useOrderAssistant(storeId: number) {
             if (allMessages.data[0].content[0].type === 'text') {
               const response = allMessages.data[0].content[0].text.value;
               const parsed = JSON.parse(response) as OrderAssistantResponse;
+              if (parsed.display_action.state === 'ADDED_MENU') {
+                parsed.display_action.added_menus.forEach((menu) =>
+                  addMenu(menu.menu_id, menu.menu_amount, menu.extra_id)
+                );
+              }
               return parsed;
             } else {
               console.log('알 수 없는 응답');
