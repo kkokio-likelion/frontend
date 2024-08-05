@@ -9,6 +9,7 @@ import useTTS from 'utils/hooks/use-tts';
 import MicrophoneWave from './microphone-wave';
 import UserInputOverlay from './user-input-overlay';
 import TextMessageBox from './text-message-box';
+import DisplayInfoCard from './display-info-card';
 
 export type MessageType = {
   role: 'system' | 'user';
@@ -24,7 +25,13 @@ export default function Main() {
     },
   ]);
   const [displayAction, setDisplayAction] =
-    useState<OrderAssistantDisplayAction>('NO_ACTION');
+    useState<OrderAssistantDisplayAction>({
+      state: 'INITIAL',
+      category_id: null,
+      menu_id: null,
+      added_menus: [],
+      order_id: null,
+    });
   const [lastUserMessage, setLastUserMessage] = useState<string>('');
 
   const { storeId } = useParams();
@@ -108,7 +115,13 @@ export default function Main() {
 
   return (
     <main className="flex flex-col justify-between h-0 flex-1">
-      <div className="bg-white h-2/3 rounded-b-3xl">
+      <div className="bg-white h-2/3 rounded-b-3xl relative">
+        <DisplayInfoCard
+          storeId={_storeId}
+          state={displayAction}
+          onInteract={sendUserMessage}
+          menus={menus}
+        />
       </div>
       <div className="w-full h-0 flex-1 relative">
         <ul className="w-full h-full flex flex-col-reverse gap-4 py-4 px-8 pb-16 overflow-y-scroll scrollbar-none">
