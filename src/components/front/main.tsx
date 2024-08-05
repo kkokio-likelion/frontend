@@ -93,12 +93,16 @@ export default function Main() {
     setContext(processed.display_action);
   };
 
+  const sendUserMessage = (message: string) => {
+    sendAndProcessMessage(message);
+    appendMessage('user', message);
+  };
+
   useEffect(() => {
     if (userMessage && lastUserMessage !== userMessage && !isSpeaking) {
       console.log('요청!!!!!');
-      sendAndProcessMessage(userMessage);
       setLastUserMessage(userMessage);
-      appendMessage('user', userMessage);
+      sendUserMessage(userMessage);
     }
   }, [lastUserMessage, userMessage, isSpeaking]);
 
