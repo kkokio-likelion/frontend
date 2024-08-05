@@ -1,42 +1,120 @@
-// Content.tsx
-import { useEffect, useState } from 'react';
-import Card from 'components/modal-page/card'
+import { useCallback, useEffect, useState } from 'react';
+import Card from 'components/modal-page/card';
 import Button from './button';
+import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  MenuControllerApi,
+  Configuration,
+  ExtraControllerApi,
+} from 'utils/api';
 import MenuList from './menu-list';
-import { data } from 'utils/api/dummy-data';
-import { useNavigate } from 'react-router-dom';
+
+const apiConfig = new Configuration({
+  basePath: import.meta.env.VITE_API_BASE_URL as string,
+});
+
+const menuApi = new MenuControllerApi(apiConfig);
+const extraApi = new ExtraControllerApi(apiConfig);
 
 type Side = {
+  id: number;
   name: string;
   price: number;
 };
-
 type Menu = {
+  id: number;
   name: string;
   price: number;
   count: number;
+  categoryId: number;
+  categoryName: string;
+  img: string;
   sides: Array<Side>;
 };
+
 export default function Content() {
-  const [menu, setMenu] = useState({});
-  const [category, setCateory] = useState(Object.keys(data)[0]);
+  const [menu, setMenu] = useState<Menu[]>([]);
+  const [categoryarray, setCategoryArray] = useState<string[]>([]);
+  const [category, setCategory] = useState('');
   const [totalprice, setTotalPrice] = useState(0);
   const [totalcount, setTotalCount] = useState(0);
-  const [selectedMenuName, setSelectedMenuName] = useState('');
-  const [selectedMenuPrice, setSelectedMenuPrice] = useState(0);
-  const [selectedMenuside, setSelectedMenuSide] = useState<Side[]>([]);
   const [selectedTotalMenu, setSelectedTotalMenu] = useState<Menu[]>([]);
+  const [modal, setModal] = useState(false);
+  const [selectedMenu, setSelectedMenu] = useState<Menu>();
 
+  const location= useLocation();
+
+  useEffect(() => {
+    if(location.state?.totalMenu){
+    setSelectedTotalMenu(location.state?.totalMenu)
+    const count = location.state.totalMenu.reduce((acc:number,item:Menu) => acc + item.count ,0)
+    const newPrice = location.state.totalMenu.reduce((acc:number, item:Menu) => acc + item.price, 0);
+    setTotalCount((prev) => (count))
+    setTotalPrice((prev) => (newPrice))
+    }
+  }, [location.state]);
+  
   const navigate = useNavigate();
 
   useEffect(() => {
-    setMenu(data);
+    setAllMenu(36);
   }, []);
 
-  const [modal, setModal] = useState(false);
+  const removeCategory = (categories: string[]) => {
+    const uniqueCategories = Array.from(new Set(categories));
+    setCategoryArray(uniqueCategories);
+  };
+
+  const callExtraMenu = useCallback(async (menuId: number) => {
+    const extraMenu = await extraApi.getExtraInfoByMenuId({
+      menuId,
+      pageable: { page: 0, size: 100 },
+    });
+    return extraMenu.content;
+  }, []);
+
+  const setAllMenu = useCallback(
+    async (storeId: number) => {
+      const allMenu = await menuApi.getMenuInfoStoreId({
+        storeId,
+        pageable: { page: 0, size: 100 },
+      });
+
+      const menuPromises =
+        allMenu.content?.map(async (item) => {
+          const menuid = item.menuId;
+          const extraMenu = await callExtraMenu(menuid!);
+
+          return {
+            id: item.menuId,
+            name: item.menuName,
+            price: item.menuPrice,
+            count: 0,
+            img: item.menuImgUrl,
+            categoryId: item.categoryDtoOnly?.categoryId,
+            categoryName: item.categoryDtoOnly?.categoryName,
+            sides: extraMenu?.map((sideItem) => ({
+              id: sideItem.extraId,
+              name: sideItem.extraName,
+              price: sideItem.extraPrice,
+            })),
+          };
+        }) || [];
+
+      const menus = await Promise.all(menuPromises);
+
+      const categories = menus
+        .map((menuItem) => menuItem.categoryName)
+        .filter((name) => name !== undefined) as string[];
+      removeCategory(categories);
+      setCategory(categories[0]);
+      setMenu(menus);
+    },
+    [callExtraMenu]
+  );
 
   const clickButton = (menu: string) => {
-    setCateory(menu);
+    setCategory(menu);
   };
 
   const plusMenu = (price: number, count: number) => {
@@ -44,20 +122,42 @@ export default function Content() {
     setTotalCount((prev) => prev + count);
   };
 
-  const clickMenu = (name: string, price: number, side: Array<Side>) => {
+  const clickMenu = (menu: Menu) => {
     setModal(true);
-    setSelectedMenuName(name);
-    setSelectedMenuPrice(price);
-    setSelectedMenuSide(side);
+    setSelectedMenu(menu);
   };
 
   const saveMenu = (menuDetails: Menu) => {
-    setSelectedTotalMenu((prev) => [...prev, menuDetails]);
+    setSelectedTotalMenu((prev) => {
+      const existingMenuIndex = prev.findIndex(
+        (item) =>
+          item.id === menuDetails.id &&
+          JSON.stringify(item.sides.map((side) => side.id).sort()) ===
+            JSON.stringify(menuDetails.sides.map((side) => side.id).sort())
+      );
+
+      if (existingMenuIndex !== -1) {
+        const updatedMenus = prev.map((item, index) => {
+          if (index === existingMenuIndex) {
+            return {
+              ...item,
+              count: item.count + menuDetails.count,
+              price: item.price + menuDetails.price,
+            };
+          }
+          return item;
+        });
+
+        return updatedMenus;
+      }
+
+      return [...prev, menuDetails];
+    });
     console.log(selectedTotalMenu);
   };
 
   const navigateToPurchase = () => {
-    navigate('/menu/order', { state: { selectedTotalMenu } });
+    navigate('/1/menu/order', { state: { selectedTotalMenu } });
   };
 
   return (
@@ -66,35 +166,34 @@ export default function Content() {
         <Card
           plus={plusMenu}
           modalclick={() => setModal(false)}
-          menuName={selectedMenuName}
-          menuPrice={selectedMenuPrice}
-          sidemenu={selectedMenuside}
+          menu={selectedMenu!}
           savemenu={saveMenu}
         />
       )}
       <div className="flex whitespace-nowrap items-start gap-x-3 py-4 px-2.5 overflow-x-auto">
-        {Object.keys(menu).map((key) =>
-          category === key ? (
-            <Button key={key} selected={true} onClick={clickButton} value={key}>
-              {key}
-            </Button>
-          ) : (
-            <Button selected={false} onClick={clickButton} value={key}>
-              {key}
-            </Button>
-          )
-        )}
+        {categoryarray.map((key) => (
+          <Button
+            key={key}
+            selected={category === key}
+            onClick={() => clickButton(key)}
+            value={key}
+          >
+            {key}
+          </Button>
+        ))}
       </div>
       <div className="flex flex-wrap px-4 py-2 items-center justify-center gap-4 overflow-auto">
-        {data[category].map((item) => (
-          <MenuList
-            key={item.id}
-            menuName={item.name}
-            menuPrice={item.price}
-            side={item.side}
-            MenuClick={() => clickMenu(item.name, item.price, item.side)}
-          />
-        ))}
+        {menu.map((item) =>
+          item.categoryName === category ? (
+            <MenuList
+              key={item.id}
+              menu={item}
+              MenuClick={() => clickMenu(item)}
+            />
+          ) : (
+            <></>
+          )
+        )}
       </div>
       {!modal && (
         <div className="flex flex-col w-dvw p-4 items-start gap-2.5 fixed bottom-0 border-t-1px border-t-[#F0F0F0] bg-white">

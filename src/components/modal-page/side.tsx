@@ -1,34 +1,36 @@
 import { useState } from 'react';
 import CheckIcon from 'assets/icon/check-icon';
 
+type Side = {
+  id: number;
+  name: string;
+  price: number;
+};
 type MenuCheckCallback = (
   checked: boolean,
-  sidename: string,
-  sideprice: number
+  side:Side
 ) => void;
 
 type Props = {
+  side:Side
   plusSide: (sideprice: number) => void;
   onCheck: MenuCheckCallback;
-  sidename: string;
-  sideprice: number;
 };
 
 export default function Side({
   plusSide,
-  sidename,
-  sideprice,
+  side,
   onCheck,
 }: Props) {
   const [checked, setChecked] = useState(false);
 
   const checkClick = () => {
     if (checked) {
-      plusSide(-sideprice);
-      onCheck(false, sidename, sideprice);
+      plusSide(-side.price);
+      onCheck(false, side);
     } else {
-      plusSide(sideprice);
-      onCheck(true, sidename, sideprice);
+      plusSide(side.price);
+      onCheck(true, side);
     }
     setChecked(!checked);
   };
@@ -47,9 +49,9 @@ export default function Side({
           ></div>
         )}
         <p className="grow font-medium leading-none text-base shrink basis-0">
-          {sidename}
+          {side.name}
         </p>
-        <p className="font-medium leading-none text-base">+{sideprice}원</p>
+        <p className="font-medium leading-none text-base">+{side.price}원</p>
       </div>
     </div>
   );

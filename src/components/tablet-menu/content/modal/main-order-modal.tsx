@@ -1,7 +1,7 @@
-import { useLocation } from 'react-router-dom';
-import BottomBar from './bottom-bar';
-import MenuInfo from './menu-info';
 import { Key, useEffect, useState } from 'react';
+import MenuInfo from './menu-info';
+import BottomBar from './bottom-bar';
+
 type Side = {
   id: number;
   name: string;
@@ -18,25 +18,16 @@ type Menu = {
   sides: Array<Side>;
 };
 
+type Props = {
+  totalMenu: Menu[];
+  closeOrderModal: () => void;
+  saveMenuData: (Menu: Menu[]) => void;
+};
 
-export default function OrderPage({}) {
-  const location = useLocation();
-  const { selectedTotalMenu = [] } = location.state || {}; 
-  const [menuList, setMenuList] = useState<Menu[]>(selectedTotalMenu);
-  const [totalcount, setTotalCount] = useState(0);
-  const [totalprice, setTotalPrice] = useState(0);
+export default function OrderModal({ totalMenu, saveMenuData, closeOrderModal }: Props) {
+  const [menuList, setMenuList] = useState<Menu[]>(totalMenu);
 
-  useEffect(() => {
-    let totalCount = 0;
-    let totalPrice = 0;
-    menuList.forEach((item: Menu) => {
-      totalCount += item.count;
-      totalPrice += item.price;
-    });
-    setTotalCount(totalCount);
-    setTotalPrice(totalPrice);
-  }, [menuList]);
-
+  
   const minusMenu =(menuId: number, sideIds: number[]) => {
     setMenuList((prevList) => {
       const updatedList = prevList.map((menu) => {
@@ -82,21 +73,28 @@ export default function OrderPage({}) {
 
   return (
     <>
-      <div className="w-dvw bg-white flex-col justify-start items-start inline-flex">
-        <header className="self-stretch p-4 bg-white shadow justify-center items-start gap-2.5 inline-flex text-[22px] font-medium leading-snug">
-          주문서
-        </header>
-        {menuList.map((item: Menu) => (
+      <div className="w-dvw h-dvh bg-black/20 absolute"></div>
+      <div className="w-2/6 h-dvh absolute right-0 bg-white flex-col justify-start items-start inline-flex">
+        <div className="self-stretch p-4 bg-white shadow justify-start items-center gap-2.5 inline-flex">
+          <div className="text-black text-[28px] font-medium leading-7">
+            주문서
+          </div>
+        </div>
+        {menuList.map((item: Menu, index: Key | null | undefined) => (
           <MenuInfo
-            key={item.id}
+            key={index}
             menu={item}
-            minusMenu={() => minusMenu(item.id, item.sides.map(side => side.id))}
-            plusMenu={() => plusMenu(item.id, item.sides.map(side => side.id))}
-            deleteMenu={() => deleteMenu(item.id, item.sides.map(side => side.id))}
-          />
+            minusMenu={minusMenu}
+            plusMenu={plusMenu}
+            deleteMenu={deleteMenu}
+          ></MenuInfo>
         ))}
+        <BottomBar
+          closeOrderModal={closeOrderModal}
+          saveMenuData={saveMenuData}
+          menu={menuList}
+        />
       </div>
-      <BottomBar selectedTotalMenu={menuList} price={totalprice} count={totalcount} />
     </>
   );
 }

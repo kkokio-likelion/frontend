@@ -3,18 +3,34 @@ import PlusIcon from '../../../assets/icon/plus-icon';
 import OptionItem from './side-item';
 
 type Side = {
+  id: number;
   name: string;
   price: number;
 };
-
-type Props = {
+type Menu = {
+  id: number;
   name: string;
   price: number;
   count: number;
-  side: Array<Side>;
+  categoryId: number;
+  categoryName: string;
+  img: string;
+  sides: Array<Side>;
 };
 
-export default function MenuInfo({ name, price, count, side }: Props) {
+type Props = {
+  menu: Menu;
+  minusMenu: (menuId: number, sideIds: number[]) => void;
+  plusMenu: (menuId: number, sideIds: number[]) => void;
+  deleteMenu: (menuId: number, sideIds: number[]) => void;
+};
+
+export default function MenuInfo({
+  menu,
+  minusMenu,
+  plusMenu,
+  deleteMenu,
+}: Props) {
   return (
     <>
       <div className="w-dvw self-stretch p-4 border-b border-[#f0f0f0] flex-col justify-center items-start gap-4 flex">
@@ -22,35 +38,59 @@ export default function MenuInfo({ name, price, count, side }: Props) {
           <div className="self-stretch justify-start items-center gap-4 inline-flex">
             <div className="w-[73px] h-[73px] p-2 border border-[#dddddd] justify-start items-center gap-2.5 flex">
               <img
-                src="https://via.placeholder.com/57x29"
+                src={menu.img}
                 className="grow shrink basis-0 h-[29px]"
               ></img>
             </div>
             <p className="grow shrink basis-0 text-black text-xl font-medium leading-tight">
-              {name}
+              {menu.name}
             </p>
-            <button className="flex h-8 px-4 flex-col justify-center items-center rounded-2xl border border-[#DB0000] text-[#DB0000] text-base font-medium leading-none">
+            <button
+              onClick={() =>
+                deleteMenu(
+                  menu.id,
+                  menu.sides.map((side) => side.id)
+                )
+              }
+              className="flex h-8 px-4 flex-col justify-center items-center rounded-2xl border border-[#DB0000] text-[#DB0000] text-base font-medium leading-none"
+            >
               삭제
             </button>
           </div>
           <div className="self-stretch justify-end items-center gap-4 inline-flex">
             <p className="text-[#EB0000] text-[16px] font-medium leading-[16px]">
-              {price}원
+              {menu.price}원
             </p>
             <div className="flex justify-center items-center gap-4">
-              <button className="flex w-8 h-8 flex-col justify-center items-center rounded-2xl border border-black">
+              <button
+                onClick={() =>
+                  minusMenu(
+                    menu.id,
+                    menu.sides.map((side) => side.id)
+                  )
+                }
+                className="flex w-8 h-8 flex-col justify-center items-center rounded-2xl border border-black"
+              >
                 <Minusicon />
               </button>
               <p className="text-center font-noto text-lg font-medium leading-[1.125rem]">
-                {count}
+                {menu.count}
               </p>
-              <button className="flex w-8 h-8 flex-col justify-center items-center rounded-2xl border border-black">
+              <button
+                onClick={() =>
+                  plusMenu(
+                    menu.id,
+                    menu.sides.map((side) => side.id)
+                  )
+                }
+                className="flex w-8 h-8 flex-col justify-center items-center rounded-2xl border border-black"
+              >
                 <PlusIcon />
               </button>
             </div>
           </div>
         </div>
-        {side.map((item, index) => (
+        {menu.sides.map((item, index) => (
           <OptionItem key={index} name={item.name} price={item.price} />
         ))}
       </div>

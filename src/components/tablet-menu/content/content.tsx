@@ -1,44 +1,123 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { data } from 'utils/api/dummy-data';
 import Button from './button';
 import { useNavigate } from 'react-router-dom';
 import MenuList from './menu-list';
 import Card from 'components/modal-page/card';
-import OrderModal from './modal/order-modal';
+import OrderModal from './modal/main-order-modal';
+import {
+  MenuControllerApi,
+  Configuration,
+  ExtraControllerApi,
+} from 'utils/api';
+
+const apiConfig = new Configuration({
+  basePath: import.meta.env.VITE_API_BASE_URL as string,
+});
+
+const menuApi = new MenuControllerApi(apiConfig);
+const extraApi = new ExtraControllerApi(apiConfig);
 
 type Side = {
+  id: number;
   name: string;
   price: number;
 };
-
 type Menu = {
+  id: number;
   name: string;
   price: number;
   count: number;
+  categoryId: number;
+  categoryName: string;
+  img: string;
   sides: Array<Side>;
 };
 
 export default function Content() {
-  const [menu, setMenu] = useState({});
-  const [category, setCateory] = useState(Object.keys(data)[0]);
+  const [menu, setMenu] = useState<Menu[]>([]);
+  const [category, setCategory] = useState('');
+  const [categoryarray, setCategoryArray] = useState<string[]>([]);
   const [totalprice, setTotalPrice] = useState(0);
   const [totalcount, setTotalCount] = useState(0);
-  const [selectedMenuName, setSelectedMenuName] = useState('');
-  const [selectedMenuPrice, setSelectedMenuPrice] = useState(0);
-  const [selectedMenuside, setSelectedMenuSide] = useState<Side[]>([]);
   const [selectedTotalMenu, setSelectedTotalMenu] = useState<Menu[]>([]);
-
+  const [selectedMenu, setSelectedMenu] = useState<Menu>();
   const navigate = useNavigate();
 
   useEffect(() => {
-    setMenu(data);
+    setAllMenu(36);
   }, []);
+
+  const saveMenuData = (menu: Menu[]) => {
+    setSelectedTotalMenu(menu);
+    let totalCount = 0;
+    let totalPrice = 0;
+    menu.forEach((item) => {
+      totalCount += item.count;
+      totalPrice += item.price;
+    });
+    setTotalCount(totalCount);
+    setTotalPrice(totalPrice);
+  };
 
   const [modal, setModal] = useState(false);
   const [orderModal, setOrderModal] = useState(false);
 
+  const removeCategory = (categories: string[]) => {
+    const uniqueCategories = Array.from(new Set(categories));
+    setCategoryArray(uniqueCategories);
+  };
+
+  const callExtraMenu = useCallback(async (menuId: number) => {
+    const extraMenu = await extraApi.getExtraInfoByMenuId({
+      menuId,
+      pageable: { page: 0, size: 100 },
+    });
+    return extraMenu.content;
+  }, []);
+
+  const setAllMenu = useCallback(
+    async (storeId: number) => {
+      const allMenu = await menuApi.getMenuInfoStoreId({
+        storeId,
+        pageable: { page: 0, size: 100 },
+      });
+
+      const menuPromises =
+        allMenu.content?.map(async (item) => {
+          const menuid = item.menuId;
+          const extraMenu = await callExtraMenu(menuid!);
+
+          return {
+            id: item.menuId,
+            name: item.menuName,
+            price: item.menuPrice,
+            count: 0,
+            img: item.menuImgUrl,
+            categoryId: item.categoryDtoOnly?.categoryId,
+            categoryName: item.categoryDtoOnly?.categoryName,
+            sides: extraMenu?.map((sideItem) => ({
+              id: sideItem.extraId,
+              name: sideItem.extraName,
+              price: sideItem.extraPrice,
+            })),
+          };
+        }) || [];
+
+      const menus = await Promise.all(menuPromises);
+
+      const categories = menus
+        .map((menuItem) => menuItem.categoryName)
+        .filter((name) => name !== undefined) as string[];
+      removeCategory(categories);
+      setCategory(categories[0]);
+      setMenu(menus);
+    },
+    [callExtraMenu]
+  );
+
   const clickButton = (menu: string) => {
-    setCateory(menu);
+    setCategory(menu);
   };
 
   const plusMenu = (price: number, count: number) => {
@@ -46,15 +125,37 @@ export default function Content() {
     setTotalCount((prev) => prev + count);
   };
 
-  const clickMenu = (name: string, price: number, side: Array<Side>) => {
+  const clickMenu = (menu: Menu) => {
     setModal(true);
-    setSelectedMenuName(name);
-    setSelectedMenuPrice(price);
-    setSelectedMenuSide(side);
+    setSelectedMenu(menu);
   };
 
   const saveMenu = (menuDetails: Menu) => {
-    setSelectedTotalMenu((prev) => [...prev, menuDetails]);
+    setSelectedTotalMenu((prev) => {
+      const existingMenuIndex = prev.findIndex(
+        (item) =>
+          item.id === menuDetails.id &&
+          JSON.stringify(item.sides.map((side) => side.id).sort()) ===
+            JSON.stringify(menuDetails.sides.map((side) => side.id).sort())
+      );
+
+      if (existingMenuIndex !== -1) {
+        const updatedMenus = prev.map((item, index) => {
+          if (index === existingMenuIndex) {
+            return {
+              ...item,
+              count: item.count + menuDetails.count,
+              price: item.price + menuDetails.price,
+            };
+          }
+          return item;
+        });
+
+        return updatedMenus;
+      }
+
+      return [...prev, menuDetails];
+    });
     console.log(selectedTotalMenu);
   };
 
@@ -68,14 +169,18 @@ export default function Content() {
 
   return (
     <>
-      {orderModal && <OrderModal closeOrderModal={closeOrderModal} totalMenu={selectedTotalMenu}></OrderModal>}
+      {orderModal && (
+        <OrderModal
+          saveMenuData={saveMenuData}
+          closeOrderModal={closeOrderModal}
+          totalMenu={selectedTotalMenu}
+        ></OrderModal>
+      )}
       {modal && (
         <Card
           plus={plusMenu}
           modalclick={() => setModal(false)}
-          menuName={selectedMenuName}
-          menuPrice={selectedMenuPrice}
-          sidemenu={selectedMenuside}
+          menu={selectedMenu!}
           savemenu={saveMenu}
         />
       )}
@@ -87,22 +192,16 @@ export default function Content() {
             </div>
           </div>
           <div className="self-stretch grow shrink basis-0 px-2.5 py-4 flex-col justify-start items-start flex whitespace-nowrap overflow-y-auto">
-            {Object.keys(menu).map((key) =>
-              category === key ? (
-                <Button
-                  key={key}
-                  selected={true}
-                  onClick={clickButton}
-                  value={key}
-                >
-                  {key}
-                </Button>
-              ) : (
-                <Button key={key} selected={false} onClick={clickButton} value={key}>
-                  {key}
-                </Button>
-              )
-            )}
+            {categoryarray.map((key) => (
+              <Button
+                key={key}
+                selected={category === key}
+                onClick={() => clickButton(key)}
+                value={key}
+              >
+                {key}
+              </Button>
+            ))}
           </div>
           <div className="self-stretch p-4 justify-start items-center gap-2 inline-flex">
             <div className="grow shrink  whitespace-nowrap basis-0  px-6 py-4 bg-[#555555] rounded-lg justify-center items-center gap-2.5 flex">
@@ -158,15 +257,17 @@ export default function Content() {
             </div>
           </div>
           <div className="flex-wrap self-stretch p-6 justify-start items-start gap-4 inline-flex overflow-auto">
-            {data[category].map((item) => (
-              <MenuList
-                key={item.id}
-                menuName={item.name}
-                menuPrice={item.price}
-                side={item.side}
-                MenuClick={() => clickMenu(item.name, item.price, item.side)}
-              />
-            ))}
+            {menu.map((item) =>
+              item.categoryName === category ? (
+                <MenuList
+                  key={item.id}
+                  menu={item}
+                  MenuClick={() => clickMenu(item)}
+                />
+              ) : (
+                <></>
+              )
+            )}
           </div>
         </div>
       </div>

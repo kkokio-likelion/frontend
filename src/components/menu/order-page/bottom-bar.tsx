@@ -1,11 +1,28 @@
 import { Link } from 'react-router-dom';
 
+type Side = {
+  id: number;
+  name: string;
+  price: number;
+};
+type Menu = {
+  id: number;
+  name: string;
+  price: number;
+  count: number;
+  categoryId: number;
+  categoryName: string;
+  img: string;
+  sides: Array<Side>;
+};
+
 type Props = {
   price: number;
   count: number;
+  selectedTotalMenu:Menu[];
 };
 
-export default function BottomBar({ price, count }: Props) {
+export default function BottomBar({ selectedTotalMenu,price, count }: Props) {
   return (
     <>
       <div className="flex w-dvw p-4 flex-col items-start gap-4 absolute bottom-0 border-t bg-white border-[#F0F0F0] z-50">
@@ -20,7 +37,8 @@ export default function BottomBar({ price, count }: Props) {
         <div className="w-full flex items-start gap-4">
           <Link
             className="flex w-2/5 p-4 justify-center items-center gap-2 rounded-lg border border-[#AAA] text-xl font-medium leading-tight text-black/75"
-            to="/menu"
+            to="/menu/menu"
+            state={{totalMenu:selectedTotalMenu}}
           >
             더 담기
           </Link>
