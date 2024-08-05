@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 import {
   CategoryControllerApi,
   Configuration,
+  ExtraControllerApi,
   MenuControllerApi,
   OrderControllerApi,
   StoreControllerApi,
@@ -16,6 +17,7 @@ const storeApi = new StoreControllerApi(apiConfig);
 const categoryApi = new CategoryControllerApi(apiConfig);
 const menuApi = new MenuControllerApi(apiConfig);
 const orderApi = new OrderControllerApi(apiConfig);
+const extraApi = new ExtraControllerApi(apiConfig);
 
 export type OrderAssistantDisplayAction = {
   state: OrderAssistantDisplayActionState;
@@ -48,7 +50,8 @@ export type FunctionName =
   | 'addMenuOrder'
   | 'editMenuOrder'
   | 'removeMenuOrder'
-  | 'submitOrder';
+  | 'submitOrder'
+  | 'getExtraOptionByMenuId';
 
 const assistantId = import.meta.env.VITE_OPENAI_ASSISTANT_ID;
 const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
@@ -93,6 +96,14 @@ export default function useOrderAssistant(storeId: number) {
           return JSON.stringify(
             await menuApi.getMenuInfoStoreId({
               storeId,
+              pageable: { page: 0, size: 100 },
+            })
+          );
+        case 'getExtraOptionByMenuId':
+          const { menuId } = JSON.parse(args) as { menuId: number };
+          return JSON.stringify(
+            await extraApi.getExtraInfoByMenuId({
+              menuId,
               pageable: { page: 0, size: 100 },
             })
           );
