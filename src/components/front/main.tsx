@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import useSpeech from 'utils/hooks/use-speech';
+import { useParams } from 'react-router-dom';
 import useOrderAssistant, {
   OrderAssistantDisplayAction,
 } from 'utils/hooks/use-order-assistant';
@@ -8,7 +9,6 @@ import useTTS from 'utils/hooks/use-tts';
 import MicrophoneWave from './microphone-wave';
 import UserInputOverlay from './user-input-overlay';
 import TextMessageBox from './text-message-box';
-import { useParams } from 'react-router-dom';
 
 export type MessageType = {
   role: 'system' | 'user';
@@ -29,6 +29,8 @@ export default function Main() {
 
   const { storeId } = useParams();
 
+  const _storeId = parseInt(storeId!);
+
   const {
     transcript: userMessage,
     isListening,
@@ -39,10 +41,10 @@ export default function Main() {
     getLevel,
     setContext,
     audio,
-  } = useSpeech(parseInt(storeId!));
+  } = useSpeech(_storeId);
 
   const { status, initAssistant, sendMessage, handleThread } =
-    useOrderAssistant(parseInt(storeId!));
+    useOrderAssistant(_storeId);
 
   const { speak } = useTTS();
 
