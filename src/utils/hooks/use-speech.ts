@@ -77,7 +77,7 @@ export default function useSpeech(storeId: number) {
     //   menu.flatMap((m) => m.side.map((o) => o.name.replace(/,/g, '_')))
     // );
     const menuNames = menus.map((menu) => menu.menuName!.replace(/,/g, '_'));
-    switch (context) {
+    switch (context.state) {
       case 'NO_ACTION':
       case 'LIST_CATEGORY':
       default:
