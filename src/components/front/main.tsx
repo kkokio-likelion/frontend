@@ -50,7 +50,7 @@ export default function Main() {
     audio,
   } = useSpeech(_storeId);
 
-  const { status, initAssistant, sendMessage, handleThread } =
+  const { status, initAssistant, sendMessage, handleThread, menus } =
     useOrderAssistant(_storeId);
 
   const { speak } = useTTS();
