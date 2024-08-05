@@ -18,8 +18,13 @@ export default function useSpeech(storeId: number) {
   const [isProcessing, setProcessing] = useState<boolean>(false);
 
   // 맥락 프롬프트 보조
-  const [context, setContext] =
-    useState<OrderAssistantDisplayAction>('NO_ACTION');
+  const [context, setContext] = useState<OrderAssistantDisplayAction>({
+    state: 'INITIAL',
+    category_id: null,
+    menu_id: null,
+    added_menus: [],
+    order_id: null,
+  });
 
   const {
     isListening,
