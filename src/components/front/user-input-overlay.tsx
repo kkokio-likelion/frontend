@@ -7,7 +7,7 @@ export interface Props {
 export default function UserInputOverlay({ onClick }: Props) {
   return (
     <motion.div
-      className="absolute inset-0 bg-black bg-opacity-50 flex justify-center items-center text-white text-4xl max-[410px]:text-4xl max-[340px]:text-3xl font-medium leading-tight select-none"
+      className="absolute inset-0 bg-black bg-opacity-50 flex justify-center items-center text-white text-4xl max-[410px]:text-4xl max-[340px]:text-3xl font-medium leading-tight select-none z-50"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, padding: 16, paddingBottom: 16 }}
       exit={{ opacity: 0, paddingBottom: 500 }}

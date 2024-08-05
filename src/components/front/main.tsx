@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import useSpeech from 'utils/hooks/use-speech';
+import { useParams } from 'react-router-dom';
 import useOrderAssistant, {
   OrderAssistantDisplayAction,
 } from 'utils/hooks/use-order-assistant';
@@ -8,7 +9,7 @@ import useTTS from 'utils/hooks/use-tts';
 import MicrophoneWave from './microphone-wave';
 import UserInputOverlay from './user-input-overlay';
 import TextMessageBox from './text-message-box';
-import { useParams } from 'react-router-dom';
+import DisplayInfoCard from './display-info-card';
 
 export type MessageType = {
   role: 'system' | 'user';
@@ -24,10 +25,18 @@ export default function Main() {
     },
   ]);
   const [displayAction, setDisplayAction] =
-    useState<OrderAssistantDisplayAction>('NO_ACTION');
+    useState<OrderAssistantDisplayAction>({
+      state: 'INITIAL',
+      category_id: null,
+      menu_id: null,
+      added_menus: [],
+      order_id: null,
+    });
   const [lastUserMessage, setLastUserMessage] = useState<string>('');
 
   const { storeId } = useParams();
+
+  const _storeId = parseInt(storeId!);
 
   const {
     transcript: userMessage,
@@ -39,10 +48,10 @@ export default function Main() {
     getLevel,
     setContext,
     audio,
-  } = useSpeech(parseInt(storeId!));
+  } = useSpeech(_storeId);
 
-  const { status, initAssistant, sendMessage, handleThread } =
-    useOrderAssistant(parseInt(storeId!));
+  const { status, initAssistant, sendMessage, handleThread, menus } =
+    useOrderAssistant(_storeId);
 
   const { speak } = useTTS();
 
@@ -91,20 +100,31 @@ export default function Main() {
     setContext(processed.display_action);
   };
 
+  const sendUserMessage = (message: string) => {
+    sendAndProcessMessage(message);
+    appendMessage('user', message);
+  };
+
   useEffect(() => {
     if (userMessage && lastUserMessage !== userMessage && !isSpeaking) {
       console.log('요청!!!!!');
-      sendAndProcessMessage(userMessage);
       setLastUserMessage(userMessage);
-      appendMessage('user', userMessage);
+      sendUserMessage(userMessage);
     }
   }, [lastUserMessage, userMessage, isSpeaking]);
 
   return (
-    <main className="flex flex-col justify-between flex-1">
-      <div className="bg-white h-1/2 rounded-b-3xl">{displayAction}</div>
-      <div className="self-start px-8 flex-1 w-full h-0 overflow-y-scroll scrollbar-none">
-        <div className="flex flex-col-reverse gap-2 py-4">
+    <main className="flex flex-col justify-between h-0 flex-1">
+      <div className="bg-white h-2/3 rounded-b-3xl relative">
+        <DisplayInfoCard
+          storeId={_storeId}
+          state={displayAction}
+          onInteract={sendUserMessage}
+          menus={menus}
+        />
+      </div>
+      <div className="w-full h-0 flex-1 relative">
+        <ul className="w-full h-full flex flex-col-reverse gap-4 py-4 px-8 pb-16 overflow-y-scroll scrollbar-none">
           {(isSpeaking || isProcessing) && (
             <TextMessageBox role="user">
               {userMessage}
@@ -116,9 +136,11 @@ export default function Main() {
               {msg.content}
             </TextMessageBox>
           ))}
-        </div>
+        </ul>
+        <div className="w-full h-16 bg-gradient-to-b from-gray-50 to-transparent absolute top-0"></div>
+        <div className="w-full h-28 bg-gradient-to-t from-10% from-gray-50 to-transparent absolute bottom-0"></div>
       </div>
-      <div className="py-4">
+      <div className="w-full px-8 py-4 fixed bottom-2 mx-auto">
         <MicrophoneWave getLevel={getLevel} />
       </div>
       <AnimatePresence>

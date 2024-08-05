@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 import {
   CategoryControllerApi,
   Configuration,
+  ExtraControllerApi,
   MenuControllerApi,
   OrderControllerApi,
   StoreControllerApi,
@@ -16,6 +17,19 @@ const storeApi = new StoreControllerApi(apiConfig);
 const categoryApi = new CategoryControllerApi(apiConfig);
 const menuApi = new MenuControllerApi(apiConfig);
 const orderApi = new OrderControllerApi(apiConfig);
+const extraApi = new ExtraControllerApi(apiConfig);
+
+export type OrderAssistantDisplayAction = {
+  state: OrderAssistantDisplayActionState;
+  category_id: number | null;
+  menu_id: number | null;
+  added_menus: {
+    menu_id: number;
+    menu_amount: number;
+    extra_id: number[];
+  }[];
+  order_id: number | null;
+};
 
 export type OrderAssistantResponse = {
   voice_message: string;
@@ -24,7 +38,8 @@ export type OrderAssistantResponse = {
   called_function_name: FunctionName[];
 };
 
-export type OrderAssistantDisplayAction =
+export type OrderAssistantDisplayActionState =
+  | 'INITIAL'
   | 'LIST_CATEGORY'
   | 'LIST_MENU'
   | 'MENU_DETAILS'
@@ -40,7 +55,8 @@ export type FunctionName =
   | 'addMenuOrder'
   | 'editMenuOrder'
   | 'removeMenuOrder'
-  | 'submitOrder';
+  | 'submitOrder'
+  | 'getExtraOptionByMenuId';
 
 const assistantId = import.meta.env.VITE_OPENAI_ASSISTANT_ID;
 const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
@@ -71,18 +87,28 @@ export default function useOrderAssistant(storeId: number) {
               pageable: { page: 0, size: 100 },
             })
           );
-        case 'getMenusByCategory':
+        case 'getMenusByCategory': {
+          const { categoryId } = JSON.parse(args) as { categoryId: number };
           return JSON.stringify(
             await menuApi.getMenuInfoStoreIdAndcategoryId({
               storeId,
-              categoryId: parseInt(args),
+              categoryId,
               pageable: { page: 0, size: 100 },
             })
           );
+        }
         case 'getMenus':
           return JSON.stringify(
             await menuApi.getMenuInfoStoreId({
               storeId,
+              pageable: { page: 0, size: 100 },
+            })
+          );
+        case 'getExtraOptionByMenuId':
+          const { menuId } = JSON.parse(args) as { menuId: number };
+          return JSON.stringify(
+            await extraApi.getExtraInfoByMenuId({
+              menuId,
               pageable: { page: 0, size: 100 },
             })
           );
@@ -96,14 +122,28 @@ export default function useOrderAssistant(storeId: number) {
           });
           return JSON.stringify(res);
         case 'addMenuOrder': {
-          const { menuId, count, sideIds } = JSON.parse(args);
-          addMenu(menuId, count, sideIds);
-          return JSON.stringify(menus);
+          const { menuId, count, extraIds } = JSON.parse(args);
+          return JSON.stringify(
+            addMenu(
+              menuId,
+              count,
+              extraIds
+                ? (extraIds as string).split(',').map((id) => parseInt(id))
+                : []
+            )
+          );
         }
         case 'editMenuOrder': {
-          const { menuId, count, sideIds } = JSON.parse(args);
-          const result = addMenu(menuId, count, sideIds);
-          return JSON.stringify(result);
+          const { menuId, count, extraIds } = JSON.parse(args);
+          return JSON.stringify(
+            addMenu(
+              menuId,
+              count,
+              extraIds
+                ? (extraIds as string).split(',').map((id) => parseInt(id))
+                : []
+            )
+          );
         }
         case 'removeMenuOrder': {
           const { menuId } = JSON.parse(args);
@@ -114,7 +154,7 @@ export default function useOrderAssistant(storeId: number) {
           return '{success: true}';
       }
     },
-    []
+    [addMenu, removeMenu]
   );
 
   const handleThread = useCallback(
@@ -142,6 +182,11 @@ export default function useOrderAssistant(storeId: number) {
             if (allMessages.data[0].content[0].type === 'text') {
               const response = allMessages.data[0].content[0].text.value;
               const parsed = JSON.parse(response) as OrderAssistantResponse;
+              if (parsed.display_action.state === 'ADDED_MENU') {
+                parsed.display_action.added_menus.forEach((menu) =>
+                  addMenu(menu.menu_id, menu.menu_amount, menu.extra_id)
+                );
+              }
               return parsed;
             } else {
               console.log('알 수 없는 응답');

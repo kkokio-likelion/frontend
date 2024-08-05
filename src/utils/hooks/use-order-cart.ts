@@ -13,16 +13,13 @@ export default function useOrderCart() {
 
   const addMenu = (menuId: number, count: number, sideIds: number[]) => {
     const newMenu = { id: menuId, count, sides: sideIds } as MenuType;
-    if (menus.find((menu) => menu.id === menuId)) {
-      setMenus([...menus.filter((menu) => menu.id !== menuId), newMenu]);
-    }
-    setMenus([...menus, newMenu]);
+    setMenus((prev) => [...prev.filter((menu) => menu.id !== menuId), newMenu]);
     return newMenu;
   };
 
   const removeMenu = (menuId: number) => {
     const deletedMenu = menus.find((menu) => menu.id == menuId);
-    setMenus([...menus.filter((menu) => menu.id !== menuId)]);
+    setMenus((prev) => [...prev.filter((menu) => menu.id !== menuId)]);
     return deletedMenu;
   };
 
