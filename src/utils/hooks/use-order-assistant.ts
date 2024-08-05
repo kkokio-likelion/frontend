@@ -17,6 +17,13 @@ const categoryApi = new CategoryControllerApi(apiConfig);
 const menuApi = new MenuControllerApi(apiConfig);
 const orderApi = new OrderControllerApi(apiConfig);
 
+export type OrderAssistantDisplayAction = {
+  state: OrderAssistantDisplayActionState;
+  category_id: number | null;
+  menu_id: number | null;
+  order_id: number | null;
+};
+
 export type OrderAssistantResponse = {
   voice_message: string;
   text_message: string;
@@ -24,7 +31,7 @@ export type OrderAssistantResponse = {
   called_function_name: FunctionName[];
 };
 
-export type OrderAssistantDisplayAction =
+export type OrderAssistantDisplayActionState =
   | 'LIST_CATEGORY'
   | 'LIST_MENU'
   | 'MENU_DETAILS'
