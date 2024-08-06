@@ -100,7 +100,7 @@ export default function Content() {
               name: sideItem.extraName,
               price: sideItem.extraPrice,
             })),
-          };
+          } as Menu;
         }) || [];
 
       const menus = await Promise.all(menuPromises);
