@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Minusicon from 'assets/icon/minus-icon';
 import PlusIcon from 'assets/icon/plus-icon';
 import Side from './side';
+import { motion } from 'framer-motion';
 
 type side = {
   id: number;
@@ -27,16 +28,10 @@ type Props = {
   savemenu: (menuDetails: Menu) => void;
 };
 
-export default function Card({
-  plus,
-  modalclick,
-  menu,
-  savemenu,
-}: Props) {
+export default function Card({ plus, modalclick, menu, savemenu }: Props) {
   const [count, setCount] = useState(1);
   const [totalside, setTotalSide] = useState(0);
   const [checkedside, setCheckedSide] = useState<side[]>([]);
-
 
   useEffect(() => {
     console.log('Updated selectedTotalMenu:', count);
@@ -85,8 +80,13 @@ export default function Card({
         onClick={modalclick}
         className="w-dvw h-dvh bg-black/20  absolute"
       ></div>
-      <div className="fixed bottom-0 w-dvw border-l-4 border-t-4 z-50 p-4 bg-white rounded-tl-2xl rounded-tr-2xl flex-col justify-start items-start gap-4 inline-flex">
-        <div className="self-stretch py-2 justify-start items-center gap-4 inline-flex">
+
+      <motion.div
+        initial={{ bottom: -100 }}
+        animate={{ bottom: 0 }}
+        className="fixed bottom-0 w-dvw border-l-4 border-t-4 z-50 p-4 bg-white rounded-tl-2xl rounded-tr-2xl flex-col justify-start items-start gap-4 inline-flex"
+      >
+        <div className="self-stretch  py-2 justify-start items-center gap-4 inline-flex">
           <div className="w-[110px] h-[110px] p-1 border justify-start items-center gap-2.5 inline-flex">
             <img src={menu.img} className="w-[102px] h-[63px]" />
           </div>
@@ -133,7 +133,7 @@ export default function Card({
         >
           {(menu.price + totalside) * count}원 담기
         </button>
-      </div>
+      </motion.div>
     </>
   );
 }
