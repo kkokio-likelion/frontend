@@ -127,7 +127,6 @@ export default function Main() {
         <ul className="w-full h-full flex flex-col-reverse gap-4 py-4 px-8 pb-16 overflow-y-scroll scrollbar-none">
           {(isSpeaking || isProcessing) && (
             <TextMessageBox role="user">
-              {userMessage}
               {(isSpeaking || isProcessing) && '...'}
             </TextMessageBox>
           )}
