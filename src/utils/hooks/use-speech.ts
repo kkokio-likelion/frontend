@@ -5,7 +5,8 @@ import { Configuration, MenuControllerApi } from 'utils/api';
 import { OrderAssistantDisplayAction } from './use-order-assistant';
 
 const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
+const baseURL = import.meta.env.VITE_OPENAI_PROXY_URL;
+const openai = new OpenAI({ baseURL, apiKey, dangerouslyAllowBrowser: true });
 
 const apiConfig = new Configuration({
   basePath: import.meta.env.VITE_API_BASE_URL as string,

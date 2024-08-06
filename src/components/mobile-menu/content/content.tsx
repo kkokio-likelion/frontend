@@ -7,7 +7,7 @@ import {
   Configuration,
   ExtraControllerApi,
 } from 'utils/api';
-import MenuList from './menu-list';
+import MenuItem from './menu-item';
 
 const apiConfig = new Configuration({
   basePath: import.meta.env.VITE_API_BASE_URL as string,
@@ -42,18 +42,24 @@ export default function Content() {
   const [modal, setModal] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<Menu>();
 
-  const location= useLocation();
+  const location = useLocation();
 
   useEffect(() => {
-    if(location.state?.totalMenu){
-    setSelectedTotalMenu(location.state?.totalMenu)
-    const count = location.state.totalMenu.reduce((acc:number,item:Menu) => acc + item.count ,0)
-    const newPrice = location.state.totalMenu.reduce((acc:number, item:Menu) => acc + item.price, 0);
-    setTotalCount((prev) => (count))
-    setTotalPrice((prev) => (newPrice))
+    if (location.state?.totalMenu) {
+      setSelectedTotalMenu(location.state?.totalMenu);
+      const count = location.state.totalMenu.reduce(
+        (acc: number, item: Menu) => acc + item.count,
+        0
+      );
+      const newPrice = location.state.totalMenu.reduce(
+        (acc: number, item: Menu) => acc + item.price,
+        0
+      );
+      setTotalCount((prev) => prev + count);
+      setTotalPrice((prev) => prev + newPrice);
     }
   }, [location.state]);
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -98,7 +104,7 @@ export default function Content() {
               name: sideItem.extraName,
               price: sideItem.extraPrice,
             })),
-          };
+          } as Menu;
         }) || [];
 
       const menus = await Promise.all(menuPromises);
@@ -182,18 +188,20 @@ export default function Content() {
           </Button>
         ))}
       </div>
-      <div className="flex flex-wrap px-4 py-2 items-center justify-center gap-4 overflow-auto">
-        {menu.map((item) =>
-          item.categoryName === category ? (
-            <MenuList
-              key={item.id}
-              menu={item}
-              MenuClick={() => clickMenu(item)}
-            />
-          ) : (
-            <></>
-          )
-        )}
+      <div className="flex px-4 py-2 items-center justify-center gap-4 overflow-auto">
+        <div className="flex flex-wrap px-4 py-2 items-center gap-4 overflow-auto">
+          {menu.map((item) =>
+            item.categoryName === category ? (
+              <MenuItem
+                key={item.id}
+                menu={item}
+                onClick={() => clickMenu(item)}
+              />
+            ) : (
+              <></>
+            )
+          )}
+        </div>
       </div>
       {!modal && (
         <div className="flex flex-col w-dvw p-4 items-start gap-2.5 fixed bottom-0 border-t-1px border-t-[#F0F0F0] bg-white">

@@ -1,6 +1,6 @@
 type Props = {
-  menu: Menu
-  MenuClick: () => void;
+  menu: Menu;
+  onClick: () => void;
 };
 
 type Side = {
@@ -19,15 +19,11 @@ type Menu = {
   sides: Array<Side>;
 };
 
-
-export default function MenuList({
-  menu,
-  MenuClick
-}: Props) {
+export default function MenuItem({ menu, onClick }: Props) {
   return (
     <>
       <div
-        onClick={MenuClick}
+        onClick={onClick}
         className="flex-col justify-start items-start gap-3 inline-flex"
       >
         <div className="w-44 h-44 p-4 border border-[#dddddd] justify-start items-center gap-2.5 inline-flex">

@@ -1,6 +1,7 @@
-import { Key, useEffect, useState } from 'react';
-import MenuInfo from './menu-info';
+import { Key, useState } from 'react';
+import MenuItem from './menu-item';
 import BottomBar from './bottom-bar';
+import { motion } from 'framer-motion';
 
 type Side = {
   id: number;
@@ -24,47 +25,65 @@ type Props = {
   saveMenuData: (Menu: Menu[]) => void;
 };
 
-export default function OrderModal({ totalMenu, saveMenuData, closeOrderModal }: Props) {
+export default function OrderModal({
+  totalMenu,
+  saveMenuData,
+  closeOrderModal,
+}: Props) {
   const [menuList, setMenuList] = useState<Menu[]>(totalMenu);
 
-  
-  const minusMenu =(menuId: number, sideIds: number[]) => {
+  const minusMenu = (menuId: number, sideIds: number[]) => {
     setMenuList((prevList) => {
       const updatedList = prevList.map((menu) => {
         if (
-          menu.count>1 &&
+          menu.count > 1 &&
           menu.id === menuId &&
-          JSON.stringify(menu.sides.map((side) => side.id).sort()) === JSON.stringify(sideIds.sort())
+          JSON.stringify(menu.sides.map((side) => side.id).sort()) ===
+            JSON.stringify(sideIds.sort())
         ) {
-          return { ...menu, count: menu.count - 1 , price:menu.price - (menu.price/menu.count)};
+          return {
+            ...menu,
+            count: menu.count - 1,
+            price: menu.price - menu.price / menu.count,
+          };
         }
         return menu;
       });
 
       return updatedList;
     });
-  }
+  };
 
-  const plusMenu =(menuId: number, sideIds: number[]) => {
+  const plusMenu = (menuId: number, sideIds: number[]) => {
     setMenuList((prevList) => {
       const updatedList = prevList.map((menu) => {
         if (
           menu.id === menuId &&
-          JSON.stringify(menu.sides.map((side) => side.id).sort()) === JSON.stringify(sideIds.sort())
+          JSON.stringify(menu.sides.map((side) => side.id).sort()) ===
+            JSON.stringify(sideIds.sort())
         ) {
-          return { ...menu, count: menu.count + 1 , price:menu.price + (menu.price/menu.count)}
+          return {
+            ...menu,
+            count: menu.count + 1,
+            price: menu.price + menu.price / menu.count,
+          };
         }
         return menu;
       });
 
       return updatedList;
     });
-  }
+  };
 
   const deleteMenu = (menuId: number, sideIds: number[]) => {
     setMenuList((prevList) => {
-      const updatedList = prevList.filter((menu) => 
-        !(menu.id === menuId && JSON.stringify(menu.sides.map((side) => side.id).sort()) === JSON.stringify(sideIds.sort()))
+      const updatedList = prevList.filter(
+        (menu) =>
+          !(
+            menu.id === menuId &&
+            JSON.stringify(menu.sides.map((side) => side.id).sort()) ===
+              JSON.stringify(sideIds.sort())
+          )
       );
 
       return updatedList;
@@ -81,13 +100,13 @@ export default function OrderModal({ totalMenu, saveMenuData, closeOrderModal }:
           </div>
         </div>
         {menuList.map((item: Menu, index: Key | null | undefined) => (
-          <MenuInfo
+          <MenuItem
             key={index}
             menu={item}
             minusMenu={minusMenu}
             plusMenu={plusMenu}
             deleteMenu={deleteMenu}
-          ></MenuInfo>
+          />
         ))}
         <BottomBar
           closeOrderModal={closeOrderModal}

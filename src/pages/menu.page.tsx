@@ -1,5 +1,5 @@
-import Header from 'components/menu/header';
-import Content from '../components/menu/content/content';
+import Header from 'components/mobile-menu/header';
+import Content from '../components/mobile-menu/content/content';
 
 export default function MenuPage() {
   return (

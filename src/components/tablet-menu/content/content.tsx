@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { data } from 'utils/api/dummy-data';
 import Button from './button';
 import { useNavigate } from 'react-router-dom';
 import MenuList from './menu-list';
