@@ -35,7 +35,7 @@ export default function useSpeech(storeId: number) {
     startListening,
     stopListening,
   } = useMicrophone({
-    threshold: -20,
+    threshold: -15,
   });
 
   const startRecording = async () => {
