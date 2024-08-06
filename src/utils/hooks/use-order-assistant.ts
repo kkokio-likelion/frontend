@@ -60,7 +60,8 @@ export type FunctionName =
 
 const assistantId = import.meta.env.VITE_OPENAI_ASSISTANT_ID;
 const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
+const baseURL = import.meta.env.VITE_OPENAI_PROXY_URL;
+const openai = new OpenAI({ baseURL, apiKey, dangerouslyAllowBrowser: true });
 
 export default function useOrderAssistant(storeId: number) {
   const [status, setStatus] =
